@@ -1,32 +1,17 @@
 <?php
 /**
- *
- * Ce plugin est fondé sur un plugin créé par Chris Knowles
- * voir http://premium.wpmudev.org/blog/create-presentations-in-wordpress-with-flowtime/
- *
- * Plugin Name: ALD Presentation Pages Produits
- * Plugin URI: http://parcours-performance/plugins
- * Description: pour afficher nos pages produits	
- * Version: 0.7
- * Author: Anne-Laure Delpech
- * Author URI: http://parcours-performance.com/anne-laure-delpech/#ald
- * Text Domain : clea-presentation 
- * License: GPL2
- */
-
-/*
-Plugin Name: ALD Presentation Pages Produits
-Plugin URI:  http://knowledge.parcours-performance.com
-Description: pour afficher nos pages produits
-Version:     0.7
-Author:      Anne-Laure Delpech
-Author URI:  http://knowledge.parcours-performance.com
-License:     GPL2
-License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Domain Path: /languages
-Text Domain: clea-presentation
+* Plugin Name: ALD Presentation Pages Produits
+* Plugin URI:  http://knowledge.parcours-performance.com
+* Description: pour afficher nos pages produits
+* Version:     0.7
+* Author:      Anne-Laure Delpech
+* Author URI:  http://knowledge.parcours-performance.com
+* License:     GPL2
+* Domain Path: /languages
+* Text Domain: clea-presentation
+* 
  * @package			clea-presentation
- * @version			0.1.0
+ * @version			0.7.0
  * @author 			Anne-Laure Delpech
  * @copyright 		Copyright (c) 2014-2014, Anne-Laure Delpech
  * @link			https://github.com/aldelpech/CLEA-presentation
@@ -61,39 +46,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	// fonctions pour générer des boîtes avec des couleurs à tester
 	require_once CLEA_PRES_DIR_PATH . 'includes/clea-presentation-custom-post-types.php'; 
 	
-/******************************************************************************
-* Actions à réaliser à l'initialisation et l'activation du plugin
-* @since 0.1.0
-******************************************************************************/
-
-	function clea_add_func_functions_activation() {
-		
-
-	}
-
-	register_activation_hook(__FILE__, 'clea_add_func_functions_activation'); // plugin's activation 
-
-
-/*----------------------------------------------------------------------------*
- * deactivation and uninstall
- * * @since 0.1.0
- *----------------------------------------------------------------------------*/
-	/* upon deactivation, wordpress also needs to rewrite the rules */
-	register_deactivation_hook(__FILE__, 'clea_add_func_functions_deactivation');
-
-	function clea_add_func_functions_deactivation() {
-		// flush_rewrite_rules(); // pour remettre à 0 les permaliens
-	}
-	
-	// register uninstaller
-	register_uninstall_hook(__FILE__, 'clea_add_func_functions_uninstall');
-	
-	function clea_add_func_functions_uninstall() {    
-		// actions to perform once on plugin uninstall go here
-		// remove all options and custom tables
-	}
-
-
 	
 /******************************************************************************
 * Actions à réaliser à l'initialisation et l'activation du plugin
@@ -271,7 +223,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 
 /* Creates the slide meta boxes. */
-function slides_add_meta_boxes( $post ) {  // will be hooked in the slide custom posts
+function clea_presentation_slides_add_meta_boxes( $post ) {  // will be hooked in the slide custom posts
 	// see TroyDesign.IT solution for moving a metabox above the editor
 	// http://wordpress.org/support/topic/move-custom-meta-box-above-editor
 	// http://wordpress.stackexchange.com/questions/38562/how-to-customize-default-wordpress-editor
@@ -281,7 +233,7 @@ function slides_add_meta_boxes( $post ) {  // will be hooked in the slide custom
 	add_meta_box(
 		'slide-presentation',
 		__( 'Présentation', 'clea-presentation' ),
-		'slide_presentation_metabox',	// the function called
+		'clea_presentation_slide_presentation_metabox',	// the function called
 		$post->post_type,				// renvoie le post-type du post en cours (slide normalement)
 		'normal',						// 'side'
 		'high'							// 'core'
@@ -290,7 +242,7 @@ function slides_add_meta_boxes( $post ) {  // will be hooked in the slide custom
 	add_meta_box(
         'slide-order',
         __( 'Ordre d\'écran', 'clea-presentation' ), 	// __( 'Slide Order', 'clea-presentation' ),
-        'slide_order_metabox',
+        'clea_presentation_slide_order_metabox',
         $post->post_type,
         'normal',						// 'side'
         'high'							// 'core'
@@ -304,13 +256,13 @@ function slides_add_meta_boxes( $post ) {  // will be hooked in the slide custom
 		add_meta_box(
             'ald_content',
             __('Contenu de l\'écran'),
-            'ald_content_editor_meta_box',  // array(&$this,'ald_content_editor_meta_box'),
+            'clea_presentation_editor_meta_box',  // array(&$this,'clea_presentation_editor_meta_box'),
             'slide', 'normal', 'core'
         );
 	}
 }
 
-function ald_content_editor_meta_box( $post ) {
+function clea_presentation_editor_meta_box( $post ) {
 	// the editor was unset. We reset it only after adding all the metaboxes	
 	echo '<div class="wp-editor-wrap">';
 	wp_editor($post->post_content,'content');
@@ -318,9 +270,9 @@ function ald_content_editor_meta_box( $post ) {
 }
 
 // change the background color of the "slide" editor
-add_action( 'admin_head', 'ald_action_admin_head'); //white background
+add_action( 'admin_head', 'clea_presentation_action_admin_head'); //white background
 
-function ald_action_admin_head() {
+function clea_presentation_action_admin_head() {
 	?>
 	<style type="text/css">
 		#ald_content {background-color:azure;}
@@ -329,7 +281,7 @@ function ald_action_admin_head() {
 }
 
 // change the default title for both slides and presentations
-function ald_change_default_title( $title ){
+function clea_presentation_change_default_title( $title ){
      $screen = get_current_screen();
      if  ( 'slide' == $screen->post_type ) {
           $title = 'Le titre de cet écran';
@@ -339,11 +291,11 @@ function ald_change_default_title( $title ){
      }
      return $title;
 }
-add_filter( 'enter_title_here', 'ald_change_default_title' );
+add_filter( 'enter_title_here', 'clea_presentation_change_default_title' );
 
 
 /* Displays the presentation meta box inside the slide edition page. */
-function slide_presentation_metabox( $post ) {
+function clea_presentation_slide_presentation_metabox( $post ) {
 
     $parents = get_posts(
         array(
@@ -368,10 +320,10 @@ function slide_presentation_metabox( $post ) {
 }
 
 /* Displays the slide order meta boxes. */
-function slide_order_metabox( $post ) {
+function clea_presentation_slide_order_metabox( $post ) {
 
 	// Add an nonce field so we can check for it later.
-	wp_nonce_field( 'slide_order_metabox', 'slide_order_nonce' );
+	wp_nonce_field( 'clea_presentation_slide_order_metabox', 'slide_order_nonce' );
 
     $slideorder = get_post_meta( $post->ID, 'slideorder' , true );
 
@@ -380,7 +332,7 @@ function slide_order_metabox( $post ) {
 	echo __( ' 1 pour l\'écran 1, 2 pour l\'écran 2, etc...</p>' ) ;
 }
 
-function save_slideorder( $post_id ) {
+function clea_presentation_save_slideorder( $post_id ) {
 
   /*
    * We need to verify this came from the our screen and with proper authorization,
@@ -393,7 +345,7 @@ function save_slideorder( $post_id ) {
   $nonce = $_POST['slide_order_nonce'];
 
   // Verify that the nonce is valid.
-  if ( ! wp_verify_nonce( $nonce, 'slide_order_metabox' ) ) return $post_id;
+  if ( ! wp_verify_nonce( $nonce, 'clea_presentation_slide_order_metabox' ) ) return $post_id;
 
   // If this is an autosave, our form has not been submitted, so we don't want to do anything.
   if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return $post_id;
@@ -421,13 +373,13 @@ function save_slideorder( $post_id ) {
 }
 
 /* Hook meta box to just the 'slide' post type. */
-add_action( 'add_meta_boxes_slide' , 'slides_add_meta_boxes', 0 );
+add_action( 'add_meta_boxes_slide' , 'clea_presentation_slides_add_meta_boxes', 0 );
 
 /* Add the saving of the slideorder to save_post action */
-add_action( 'save_post' , 'save_slideorder' );
+add_action( 'save_post' , 'clea_presentation_save_slideorder' );
 
 
-function custom_columns( $column, $post_id ) {
+function clea_presentation_custom_columns( $column, $post_id ) {
     
     switch ( $column ) {
 
@@ -442,10 +394,10 @@ function custom_columns( $column, $post_id ) {
     }
 }
 
-add_action( 'manage_slide_posts_custom_column' , 'custom_columns', 10, 2 );
+add_action( 'manage_slide_posts_custom_column' , 'clea_presentation_custom_columns', 10, 2 );
 
 /* Add custom column to slide list */
-function add_slide_column( $columns ) {
+function clea_presentation_add_slide_column( $columns ) {
 
     return array_merge( $columns, 
         array( 'presentation' => __( 'Presentation', 'clea-presentation' ),
@@ -455,9 +407,9 @@ function add_slide_column( $columns ) {
 
 }
 
-add_filter( 'manage_slide_posts_columns' , 'add_slide_column' );
+add_filter( 'manage_slide_posts_columns' , 'clea_presentation_add_slide_column' );
 
-function sortable_slide_columns( $columns ) {
+function clea_presentation_sortable_slide_columns( $columns ) {
 
     $columns['presentation'] = 'post_parent';
     $columns['slideorder'] = 'slideorder';
@@ -468,9 +420,9 @@ function sortable_slide_columns( $columns ) {
     return $columns;
 }
 
-add_filter( 'manage_edit-slide_sortable_columns', 'sortable_slide_columns' );
+add_filter( 'manage_edit-slide_sortable_columns', 'clea_presentation_sortable_slide_columns' );
 
-function slide_list_queries( $query ) {
+function clea_presentation_slide_list_queries( $query ) {
     
     global $pagenow;
     
@@ -488,9 +440,9 @@ function slide_list_queries( $query ) {
     
 }
 
-add_action( 'pre_get_posts', 'slide_list_queries' );
+add_action( 'pre_get_posts', 'clea_presentation_slide_list_queries' );
 
-function edit_slides_orderby($orderby_statement) {
+function clea_presentation_edit_slides_orderby($orderby_statement) {
 
     global $pagenow;
     
@@ -505,7 +457,7 @@ function edit_slides_orderby($orderby_statement) {
 
 }
 
-add_filter( 'posts_orderby', 'edit_slides_orderby' );
+add_filter( 'posts_orderby', 'clea_presentation_edit_slides_orderby' );
  
 	/* inspiré de la réponse de Michal Mau sur 
 	http://wordpress.stackexchange.com/questions/12295/creating-a-default-custom-post-template-that-a-theme-can-override
@@ -516,8 +468,10 @@ add_filter( 'posts_orderby', 'edit_slides_orderby' );
 	*/
 
 	# Template for displaying a single product
-	add_filter( 'single_template', 'ald_get_single_presentation' ) ;
-	function ald_get_single_presentation( $single_template ) {
+	add_filter( 'single_template', 'clea_presentation_get_single_presentation' ) ;
+	
+	
+	function clea_presentation_get_single_presentation( $single_template ) {
 		global $post;           
 		$template = 'single-presentation.php' ;
 		if ( $post->post_type == 'presentation' ) {
@@ -532,8 +486,9 @@ add_filter( 'posts_orderby', 'edit_slides_orderby' );
 	}
 
 	# Template for displaying the product (presentation) archive
-	add_filter( 'archive_template', 'ald_get_archive_presentation' )  ;
-	function ald_get_archive_presentation( $archive_template ) {
+	add_filter( 'archive_template', 'clea_presentation_get_archive_presentation' )  ;
+
+	function clea_presentation_get_archive_presentation( $archive_template ) {
 		global $post;
 		$template = 'archive-presentation.php' ;
 		if ( ( is_post_type_archive() ) && ( $post->post_type == 'presentation' ) ) { 
@@ -548,11 +503,6 @@ add_filter( 'posts_orderby', 'edit_slides_orderby' );
 		return $archive_template;
 	}
 	
-	
-
-
-	// add_action( 'template_include', 'ald_get_presentation_template' );  
-	// add_filter( 'template_include', 'ald_get_presentation_template' );
 
 /***************************************************************************************
 * ajouter une metabox "baseline2' dans le custom post présentation
@@ -577,9 +527,9 @@ add_filter( 'posts_orderby', 'edit_slides_orderby' );
 // place la baseline et le résumé juste en dessous du titre en principe
 // voir 
 
-add_action( 'edit_form_after_title', 'ald_baseline2_box' );
+add_action( 'edit_form_after_title', 'clea_presentation_baseline2_box' );
 
-function ald_baseline2_box() {
+function clea_presentation_baseline2_box() {
 
 	// see TroyDesign.IT solution for moving a metabox above the editor
 	// http://wordpress.org/support/topic/move-custom-meta-box-above-editor
@@ -591,7 +541,7 @@ function ald_baseline2_box() {
     add_meta_box( 
         'ald_baseline2_box',
         __( 'La Baseline', 'myplugin_textdomain' ),
-        'ald_baseline2_box_content',
+        'clea_presentation_baseline2_box_content',
         'presentation',
         'normal',
         'high'
@@ -600,7 +550,7 @@ function ald_baseline2_box() {
 	add_meta_box( 
 		'postexcerpt', 
 		__('Le résumé pour la page de synthèse'), 
-		'ald_post_excerpt_meta_box', 	// 'post_excerpt_meta_box',
+		'clea_presentation_post_excerpt_meta_box', 	// 'post_excerpt_meta_box',
 		'presentation', 
 		'normal', 
 		'core' 
@@ -615,7 +565,7 @@ function ald_baseline2_box() {
 		add_meta_box(
             'ald_content',
             __('L\'écran 0 de la page produit'),
-            'ald_content_editor_meta_box',  // array(&$this,'ald_content_editor_meta_box'),
+            'clea_presentation_editor_meta_box',  // array(&$this,'clea_presentation_editor_meta_box'),
             'presentation', 'normal', 'core'
         );
 	}
@@ -623,7 +573,7 @@ function ald_baseline2_box() {
 	
 // change the description below the excerpt
 // see http://jetpack.wp-a2z.org/oik_api/post_excerpt_meta_box/
-function ald_post_excerpt_meta_box( $post ) {	
+function clea_presentation_post_excerpt_meta_box( $post ) {	
 	?><label class="screen-reader-text" for="excerpt"><?php _e('Excerpt') ?></label><textarea rows="1" cols="40" name="excerpt" id="excerpt"><?php echo $post->post_excerpt; // textarea_escaped ?></textarea>
 <p><?php _e('Le résumé qui apparaîtra sur la page de synthèse des produits'); ?></p>
 <?php
@@ -643,7 +593,7 @@ function ald_yoast_tobottom() {
 add_filter( 'wpseo_metabox_prio', 'ald_yoast_tobottom');
 
 /* define the content of the metabox */
- function ald_baseline2_box_content( $post ) {
+ function clea_presentation_baseline2_box_content( $post ) {
   wp_nonce_field( plugin_basename( __FILE__ ), 'ald_baseline2_box_content_nonce' );
   
   // Retrieves the stored value from the database
@@ -655,8 +605,8 @@ add_filter( 'wpseo_metabox_prio', 'ald_yoast_tobottom');
 }
  
  /* handle submitted data */
- add_action( 'save_post', 'ald_baseline2_box_save' );
-function ald_baseline2_box_save( $post_id ) {
+ add_action( 'save_post', 'clea_presentation_baseline2_box_save' );
+function clea_presentation_baseline2_box_save( $post_id ) {
 
   if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) 
   return;
@@ -682,17 +632,17 @@ function ald_baseline2_box_save( $post_id ) {
 /*----------------------------------------------------------------------------*
  * deactivation and uninstall
  *----------------------------------------------------------------------------*/
-	/* upon deactivation, wordpress also needs to rewrite the rules */
-	register_deactivation_hook(__FILE__, 'clea_presentation_deactivation');
+/* upon deactivation, wordpress also needs to rewrite the rules */
+register_deactivation_hook(__FILE__, 'clea_presentation_deactivation');
 
-	function clea_presentation_deactivation() {
-		flush_rewrite_rules(); // pour remettre à 0 les permaliens
-	}
-	
-	// register uninstaller
-	register_uninstall_hook(__FILE__, 'clea_presentation_uninstall');
-	
-	function clea_presentation_uninstall() {    
-		// actions to perform once on plugin uninstall go here
-		// remove all options and custom tables
-	}
+function clea_presentation_deactivation() {
+	flush_rewrite_rules(); // pour remettre à 0 les permaliens
+}
+
+// register uninstaller
+register_uninstall_hook(__FILE__, 'clea_presentation_uninstall');
+
+function clea_presentation_uninstall() {    
+	// actions to perform once on plugin uninstall go here
+	// remove all options and custom tables
+}
