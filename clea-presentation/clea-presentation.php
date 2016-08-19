@@ -10,33 +10,90 @@
  * Version: 0.7
  * Author: Anne-Laure Delpech
  * Author URI: http://parcours-performance.com/anne-laure-delpech/#ald
- * Text Domain : clea-presentation
+ * Text Domain : clea-presentation 
  * License: GPL2
  */
 
+/*
+Plugin Name: ALD Presentation Pages Produits
+Plugin URI:  http://knowledge.parcours-performance.com
+Description: pour afficher nos pages produits
+Version:     0.7
+Author:      Anne-Laure Delpech
+Author URI:  http://knowledge.parcours-performance.com
+License:     GPL2
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Domain Path: /languages
+Text Domain: clea-presentation
+ * @package			clea-presentation
+ * @version			0.1.0
+ * @author 			Anne-Laure Delpech
+ * @copyright 		Copyright (c) 2014-2014, Anne-Laure Delpech
+ * @link			https://github.com/aldelpech/CLEA-presentation
+ * @license 		http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * @since 			0.1.0
+*/
+ 
 // If this file is called directly, abort.
-if ( ! defined( 'WPINC' ) ) {
+if ( ! defined( 'ABSPATH' ) ) {
 	die;
 }
 
 /*----------------------------------------------------------------------------*
  * Path to files
+ * @since 0.7.0
  *----------------------------------------------------------------------------*/
-	/* In order to find easily the paths
-	ALD_PRESENTATIONS_DIR.'assets/img/image.jpg' will go to the right img directory */
-	define('ALD_PRESENTATIONS_DIR', plugin_dir_path(__FILE__));
-	define('ALD_PRESENTATIONS_URL', plugin_dir_url(__FILE__));
+
+	define( 'CLEA_PRES_MAIN_FILE', __FILE__ );
+	define( 'CLEA_PRES_BASENAME', plugin_basename( CLEA_PRES_MAIN_FILE ));
+	define( 'CLEA_PRES_DIR_PATH', plugin_dir_path( CLEA_PRES_MAIN_FILE ));
+	define( 'CLEA_PRES_DIR_URL', plugin_dir_url( CLEA_PRES_MAIN_FILE ));
+	
+
+/********************************************************************************
+* appeler d'autres fichiers php et les exécuter
+* @since 0.7
+********************************************************************************/	
+	
+	// charger des styles, fonts ou scripts correctement
+	require_once CLEA_PRES_DIR_PATH . 'includes/clea-presentation-enqueues.php'; 
+
+	// fonctions pour générer des boîtes avec des couleurs à tester
+	require_once CLEA_PRES_DIR_PATH . 'includes/clea-presentation-custom-post-types.php'; 
+	
+/******************************************************************************
+* Actions à réaliser à l'initialisation et l'activation du plugin
+* @since 0.1.0
+******************************************************************************/
+
+	function clea_add_func_functions_activation() {
+		
+
+	}
+
+	register_activation_hook(__FILE__, 'clea_add_func_functions_activation'); // plugin's activation 
+
 
 /*----------------------------------------------------------------------------*
- * load function
+ * deactivation and uninstall
+ * * @since 0.1.0
  *----------------------------------------------------------------------------*/
-	/*function clea_presentation_load(){
-			
-		if(is_admin()) //load admin files only in admin
-			require_once(ALD_PRESENTATIONS_DIR.'assets/admin.php');
-			
+	/* upon deactivation, wordpress also needs to rewrite the rules */
+	register_deactivation_hook(__FILE__, 'clea_add_func_functions_deactivation');
+
+	function clea_add_func_functions_deactivation() {
+		// flush_rewrite_rules(); // pour remettre à 0 les permaliens
 	}
-	clea_presentation_load(); */
+	
+	// register uninstaller
+	register_uninstall_hook(__FILE__, 'clea_add_func_functions_uninstall');
+	
+	function clea_add_func_functions_uninstall() {    
+		// actions to perform once on plugin uninstall go here
+		// remove all options and custom tables
+	}
+
+
 	
 /******************************************************************************
 * Actions à réaliser à l'initialisation et l'activation du plugin

@@ -4,8 +4,8 @@ Template Name: pages d'archive des présentations
 */
 get_header(); ?>
 
-<link rel="stylesheet" href="<?php echo plugins_url( '../assets/css/ald.css' ,  __FILE__ ); ?>">
-<link rel="stylesheet" href="<?php echo plugins_url( '../assets/css/themes/default.css' ,  __FILE__ ); ?>">
+<link rel="stylesheet" href="<?php echo plugins_url( '../css/ald.css' ,  __FILE__ ); ?>">
+<link rel="stylesheet" href="<?php echo plugins_url( '../css/themes/default.css' ,  __FILE__ ); ?>">
 	
 <div class="container" role="main">
 <div class="ald-presentation-archive">
