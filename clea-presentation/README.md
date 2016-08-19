@@ -11,9 +11,11 @@ Ce plugin a été créé sur la base d'un plugin de Chris Knowles
 ## changelog
 
 V0-7
----> style modifié
----> templates modifiés
----> dans le fichier principal du plugin, simplement ajout en ligne 93 de 'editor' dans les éléments supportés
+* séparation du contenu en plusieurs fichiers
+* internalisation OK (mais pas encore de fichier POT)
+* style modifié
+* templates modifiés
+* dans le fichier principal du plugin, simplement ajout en ligne 93 de 'editor' dans les éléments supportés
 	par la page. Comme ça, je peux créer un ordre d'affichage des produits dans le template archive.
 	
 V0-6 
