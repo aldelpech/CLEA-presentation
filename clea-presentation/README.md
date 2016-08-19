@@ -10,6 +10,9 @@ Ce plugin a été créé sur la base d'un plugin de Chris Knowles
 ==========
 ## changelog
 
+V0-8
+* Création d'un framework pour générer une page de réglages de l'extension par intégration d'une librairie dans le répertoire /library/apf générée avec l'extension Admin Page Framework (https://wordpress.org/plugins/admin-page-framework/)
+
 V0-7
 * séparation du contenu en plusieurs fichiers
 * internalisation OK (mais pas encore de fichier POT)

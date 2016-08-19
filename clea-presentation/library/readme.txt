@@ -1,0 +1,1 @@
+Le répertoire 'apf' contient les éléments pour tout le setup, généré avec l'extension Admin Page Framework (https://wordpress.org/plugins/admin-page-framework/)
