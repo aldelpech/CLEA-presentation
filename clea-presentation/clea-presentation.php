@@ -7,9 +7,10 @@
  * Plugin Name: ALD Presentation Pages Produits
  * Plugin URI: http://parcours-performance/plugins
  * Description: pour afficher nos pages produits	
- * Version: 0.6 du 24/08/2014 à 10h34 !
+ * Version: 0.7
  * Author: Anne-Laure Delpech
  * Author URI: http://parcours-performance.com/anne-laure-delpech/#ald
+ * Text Domain : clea-presentation
  * License: GPL2
  */
 
@@ -29,35 +30,35 @@ if ( ! defined( 'WPINC' ) ) {
 /*----------------------------------------------------------------------------*
  * load function
  *----------------------------------------------------------------------------*/
-	/*function ald_presentations_load(){
+	/*function clea_presentation_load(){
 			
 		if(is_admin()) //load admin files only in admin
 			require_once(ALD_PRESENTATIONS_DIR.'assets/admin.php');
 			
 	}
-	ald_presentations_load(); */
+	clea_presentation_load(); */
 	
 /******************************************************************************
 * Actions à réaliser à l'initialisation et l'activation du plugin
 * see http://codex.wordpress.org/Function_Reference/register_post_type juste avant NOTES
 ******************************************************************************/
-	add_action( 'init', 'ald_presentations_custom_types' );
-	add_action( 'init', 'ald_presentations_taxonomy1' );
-	add_action( 'init', 'ald_presentations_taxonomy2' );
-	add_action( 'init', 'ald_presentations_thumbnails' );
+	add_action( 'init', 'clea_presentation_custom_types' );
+	add_action( 'init', 'clea_presentation_taxonomy1' );
+	add_action( 'init', 'clea_presentation_taxonomy2' );
+	add_action( 'init', 'clea_presentation_thumbnails' );
 		
-	function ald_presentations_activation() {
+	function clea_presentation_activation() {
 		// register the custom post types and taxonomies
-		ald_presentations_custom_types();
-		ald_presentations_taxonomy1();
-		ald_presentations_taxonomy2();
+		clea_presentation_custom_types();
+		clea_presentation_taxonomy1();
+		clea_presentation_taxonomy2();
 		// reflush (in order to create the new permalink system)
 		// see http://code.tutsplus.com/articles/the-rewrite-api-post-types-taxonomies--wp-25488
 		flush_rewrite_rules();
 	}
-	register_activation_hook(__FILE__, 'ald_presentations_activation');
+	register_activation_hook(__FILE__, 'clea_presentation_activation');
 
-	function ald_presentations_thumbnails() {
+	function clea_presentation_thumbnails() {
 		// add theme support for thumbnails in these custom post types
 		// source https://wordpress.org/support/topic/custom-post-type-ui-featured-image-not-showing
 
@@ -66,27 +67,27 @@ if ( ! defined( 'WPINC' ) ) {
 	}
 	
 // functions which create custom posts and taxonomies
-	function ald_presentations_custom_types() {
+	function clea_presentation_custom_types() {
 	// Register Custom Post Type "presentation"
 		$p_labels = array(
-			'name'                => _x( 'Présentations', 'Post Type General Name', 'text_domain' ),
-			'singular_name'       => _x( 'Présentation', 'Post Type Singular Name', 'text_domain' ),
-			'menu_name'           => __( 'Pages Produit', 'text_domain' ),
-			'parent_item_colon'   => __( 'Elément parent :', 'text_domain' ),
-			'all_items'           => __( 'tous les produits', 'text_domain' ),
-			'view_item'           => __( 'Voir le produit', 'text_domain' ),
-			'add_new_item'        => __( 'Ajouter un nouveau produit', 'text_domain' ),
-			'add_new'             => __( 'Nouveau produit', 'text_domain' ),
-			'edit_item'           => __( 'Editer le produit', 'text_domain' ),
-			'update_item'         => __( 'Mettre à jour le produit', 'text_domain' ),
-			'search_items'        => __( 'Search Item', 'text_domain' ),
-			'not_found'           => __( 'Not found', 'text_domain' ),
-			'not_found_in_trash'  => __( 'Not found in Trash', 'text_domain' ),
+			'name'                => _x( 'Présentations', 'Post Type General Name', 'clea-presentation' ),
+			'singular_name'       => _x( 'Présentation', 'Post Type Singular Name', 'clea-presentation' ),
+			'menu_name'           => __( 'Pages Produit', 'clea-presentation' ),
+			'parent_item_colon'   => __( 'Elément parent :', 'clea-presentation' ),
+			'all_items'           => __( 'tous les produits', 'clea-presentation' ),
+			'view_item'           => __( 'Voir le produit', 'clea-presentation' ),
+			'add_new_item'        => __( 'Ajouter un nouveau produit', 'clea-presentation' ),
+			'add_new'             => __( 'Nouveau produit', 'clea-presentation' ),
+			'edit_item'           => __( 'Editer le produit', 'clea-presentation' ),
+			'update_item'         => __( 'Mettre à jour le produit', 'clea-presentation' ),
+			'search_items'        => __( 'Search Item', 'clea-presentation' ),
+			'not_found'           => __( 'Not found', 'clea-presentation' ),
+			'not_found_in_trash'  => __( 'Not found in Trash', 'clea-presentation' ),
 		);
 		
 		$p_args = array(
-			'label'               => __( 'presentations', 'text_domain' ),
-			'description'         => __( 'A collection of slides forming a presentation', 'text_domain' ),
+			'label'               => __( 'presentations', 'clea-presentation' ),
+			'description'         => __( 'A collection of slides forming a presentation', 'clea-presentation' ),
 			'labels'              => $p_labels,
 			'supports'            => array( 
 				'title', 					// Text input field to create a post title
@@ -119,23 +120,23 @@ if ( ! defined( 'WPINC' ) ) {
 
 		// Register Custom Post Type "slides"
 		$labels = array(
-			'name'                => _x( 'Ecrans', 'Post Type General Name', 'text_domain' ),
-			'singular_name'       => _x( 'Ecran', 'Post Type Singular Name', 'text_domain' ),
-			'menu_name'           => __( 'Slides', 'text_domain' ),
-			'parent_item_colon'   => __( 'Parent Item:', 'text_domain' ),
-			'all_items'           => __( 'Les écrans', 'text_domain' ),
-			'view_item'           => __( 'View Item', 'text_domain' ),
-			'add_new_item'        => __( 'Ajouter un écran', 'text_domain' ),
-			'add_new'             => __( 'Nouvel écran', 'text_domain' ),
-			'edit_item'           => __( 'Editer l\'écran', 'text_domain' ),
-			'update_item'         => __( 'Update Item', 'text_domain' ),
-			'search_items'        => __( 'Search Item', 'text_domain' ),
-			'not_found'           => __( 'Not found', 'text_domain' ),
-			'not_found_in_trash'  => __( 'Not found in Trash', 'text_domain' ),
+			'name'                => _x( 'Ecrans', 'Post Type General Name', 'clea-presentation' ),
+			'singular_name'       => _x( 'Ecran', 'Post Type Singular Name', 'clea-presentation' ),
+			'menu_name'           => __( 'Slides', 'clea-presentation' ),
+			'parent_item_colon'   => __( 'Parent Item:', 'clea-presentation' ),
+			'all_items'           => __( 'Les écrans', 'clea-presentation' ),
+			'view_item'           => __( 'View Item', 'clea-presentation' ),
+			'add_new_item'        => __( 'Ajouter un écran', 'clea-presentation' ),
+			'add_new'             => __( 'Nouvel écran', 'clea-presentation' ),
+			'edit_item'           => __( 'Editer l\'écran', 'clea-presentation' ),
+			'update_item'         => __( 'Update Item', 'clea-presentation' ),
+			'search_items'        => __( 'Search Item', 'clea-presentation' ),
+			'not_found'           => __( 'Not found', 'clea-presentation' ),
+			'not_found_in_trash'  => __( 'Not found in Trash', 'clea-presentation' ),
 		);
 		$args = array(
-			'label'               => __( 'slides', 'text_domain' ),
-			'description'         => __( 'A individual slide', 'text_domain' ),
+			'label'               => __( 'slides', 'clea-presentation' ),
+			'description'         => __( 'A individual slide', 'clea-presentation' ),
 			'labels'              => $labels,
 			'supports'            => array( 'title', 'editor', ),
 			'hierarchical'        => false,
@@ -163,7 +164,7 @@ if ( ! defined( 'WPINC' ) ) {
 	* Voir www.smashingmagazine.com/2012/11/08/complete-guide-custom-post-types/ 
 	* voir aussi http://www.smashingmagazine.com/2012/01/04/create-custom-taxonomies-wordpress/ */
 
-	function ald_presentations_taxonomy1() {
+	function clea_presentation_taxonomy1() {
 		// taxonomie 1
 		$labels = array(
 			'name'              => _x( 'Famille', 'taxonomy general name' ),
@@ -186,7 +187,7 @@ if ( ! defined( 'WPINC' ) ) {
 		register_taxonomy( 'Famille', 'presentation', $args );
 	}
 
-	function ald_presentations_taxonomy2() {
+	function clea_presentation_taxonomy2() {
 	// taxonomie 2
 		$labels = array(
 			'name'              => _x( 'Groupe', 'taxonomy general name' ),
@@ -222,7 +223,7 @@ function slides_add_meta_boxes( $post ) {  // will be hooked in the slide custom
 	// add the metaboxes
 	add_meta_box(
 		'slide-presentation',
-		__( 'Présentation', 'text-domain' ),
+		__( 'Présentation', 'clea-presentation' ),
 		'slide_presentation_metabox',	// the function called
 		$post->post_type,				// renvoie le post-type du post en cours (slide normalement)
 		'normal',						// 'side'
@@ -231,7 +232,7 @@ function slides_add_meta_boxes( $post ) {  // will be hooked in the slide custom
     
 	add_meta_box(
         'slide-order',
-        __( 'Ordre d\'écran', 'text-domain' ), 	// __( 'Slide Order', 'text-domain' ),
+        __( 'Ordre d\'écran', 'clea-presentation' ), 	// __( 'Slide Order', 'clea-presentation' ),
         'slide_order_metabox',
         $post->post_type,
         'normal',						// 'side'
@@ -390,8 +391,8 @@ add_action( 'manage_slide_posts_custom_column' , 'custom_columns', 10, 2 );
 function add_slide_column( $columns ) {
 
     return array_merge( $columns, 
-        array( 'presentation' => __( 'Presentation', 'text_domain' ),
-        		'slideorder' => __( 'Order', 'text_domain' ),
+        array( 'presentation' => __( 'Presentation', 'clea-presentation' ),
+        		'slideorder' => __( 'Order', 'clea-presentation' ),
         ) 
     );
 
@@ -625,16 +626,16 @@ function ald_baseline2_box_save( $post_id ) {
  * deactivation and uninstall
  *----------------------------------------------------------------------------*/
 	/* upon deactivation, wordpress also needs to rewrite the rules */
-	register_deactivation_hook(__FILE__, 'ald_presentations_deactivation');
+	register_deactivation_hook(__FILE__, 'clea_presentation_deactivation');
 
-	function ald_presentations_deactivation() {
+	function clea_presentation_deactivation() {
 		flush_rewrite_rules(); // pour remettre à 0 les permaliens
 	}
 	
 	// register uninstaller
-	register_uninstall_hook(__FILE__, 'ald_presentations_uninstall');
+	register_uninstall_hook(__FILE__, 'clea_presentation_uninstall');
 	
-	function ald_presentations_uninstall() {    
+	function clea_presentation_uninstall() {    
 		// actions to perform once on plugin uninstall go here
 		// remove all options and custom tables
 	}
