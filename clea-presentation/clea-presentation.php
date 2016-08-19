@@ -46,6 +46,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	// fonctions pour générer des boîtes avec des couleurs à tester
 	require_once CLEA_PRES_DIR_PATH . 'includes/clea-presentation-custom-post-types.php'; 
 	
+	// générer une page de réglages de l'extension pour l'administrateur
+	require_once CLEA_PRES_DIR_PATH . 'includes/clea-presentation-settings-page.php';
 	
 /*----------------------------------------------------------------------------*
  * deactivation and uninstall
