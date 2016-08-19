@@ -26,4 +26,3 @@ function ald_presentations_enqueue_scripts() {
 */
 
 }
-?>
