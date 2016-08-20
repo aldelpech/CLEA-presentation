@@ -48,6 +48,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	
 	// générer une page de réglages de l'extension pour l'administrateur
 	require_once CLEA_PRES_DIR_PATH . 'admin/clea-presentation-settings-page.php';
+	require_once CLEA_PRES_DIR_PATH . 'admin/clea-presentation-settings-page-2.php';
 
 
 
