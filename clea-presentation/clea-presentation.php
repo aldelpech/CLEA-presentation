@@ -48,6 +48,28 @@ if ( ! defined( 'ABSPATH' ) ) {
 	
 	// générer une page de réglages de l'extension pour l'administrateur
 	require_once CLEA_PRES_DIR_PATH . 'includes/clea-presentation-settings-page.php';
+
+
+
+/******************************************************************************
+* Actions à réaliser à l'initialisation et l'activation du plugin
+* see http://codex.wordpress.org/Function_Reference/register_post_type juste avant NOTES
+******************************************************************************/
+	add_action( 'init', 'clea_presentation_custom_types' );
+	add_action( 'init', 'clea_presentation_taxonomy1' );
+	add_action( 'init', 'clea_presentation_taxonomy2' );
+	add_action( 'init', 'clea_presentation_thumbnails' );
+		
+	function clea_presentation_activation() {
+		// register the custom post types and taxonomies
+		clea_presentation_custom_types();
+		clea_presentation_taxonomy1();
+		clea_presentation_taxonomy2();
+		// reflush (in order to create the new permalink system)
+		// see http://code.tutsplus.com/articles/the-rewrite-api-post-types-taxonomies--wp-25488
+		flush_rewrite_rules();
+	}
+	register_activation_hook(__FILE__, 'clea_presentation_activation');
 	
 /*----------------------------------------------------------------------------*
  * deactivation and uninstall
