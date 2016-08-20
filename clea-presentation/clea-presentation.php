@@ -3,7 +3,7 @@
 * Plugin Name: ALD Presentation Pages Produits
 * Plugin URI:  http://knowledge.parcours-performance.com
 * Description: pour afficher nos pages produits
-* Version:     0.7
+* Version:     0.8
 * Author:      Anne-Laure Delpech
 * Author URI:  http://knowledge.parcours-performance.com
 * License:     GPL2
@@ -47,7 +47,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	require_once CLEA_PRES_DIR_PATH . 'includes/clea-presentation-custom-post-types.php'; 
 	
 	// générer une page de réglages de l'extension pour l'administrateur
-	require_once CLEA_PRES_DIR_PATH . 'includes/clea-presentation-settings-page.php';
+	require_once CLEA_PRES_DIR_PATH . 'admin/clea-presentation-settings-page.php';
 
 
 

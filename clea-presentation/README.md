@@ -10,6 +10,9 @@ Ce plugin a été créé sur la base d'un plugin de Chris Knowles
 ==========
 ## changelog
 
+V0-8 
+* tests de pages d'options en cours
+
 V0-7
 * séparation du contenu en plusieurs fichiers
 * internalisation OK (mais pas encore de fichier POT)
