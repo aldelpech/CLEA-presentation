@@ -11,7 +11,7 @@
 * Text Domain: clea-presentation
 * 
  * @package			clea-presentation
- * @version			0.7.0
+ * @version			0.9.0
  * @author 			Anne-Laure Delpech
  * @copyright 		Copyright (c) 2014-2014, Anne-Laure Delpech
  * @link			https://github.com/aldelpech/CLEA-presentation
@@ -29,10 +29,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since 0.7.0
  *----------------------------------------------------------------------------*/
 
-	define( 'CLEA_PRES_MAIN_FILE', __FILE__ );
-	define( 'CLEA_PRES_BASENAME', plugin_basename( CLEA_PRES_MAIN_FILE ));
-	define( 'CLEA_PRES_DIR_PATH', plugin_dir_path( CLEA_PRES_MAIN_FILE ));
-	define( 'CLEA_PRES_DIR_URL', plugin_dir_url( CLEA_PRES_MAIN_FILE ));
+define( 'CLEA_PRES_MAIN_FILE', __FILE__ );
+define( 'CLEA_PRES_BASENAME', plugin_basename( CLEA_PRES_MAIN_FILE ));
+define( 'CLEA_PRES_DIR_PATH', plugin_dir_path( CLEA_PRES_MAIN_FILE ));
+define( 'CLEA_PRES_DIR_URL', plugin_dir_url( CLEA_PRES_MAIN_FILE ));
 	
 
 /********************************************************************************
@@ -40,17 +40,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 * @since 0.7
 ********************************************************************************/	
 	
-	// charger des styles, fonts ou scripts correctement
-	require_once CLEA_PRES_DIR_PATH . 'includes/clea-presentation-enqueues.php'; 
+// charger des styles, fonts ou scripts correctement
+require_once CLEA_PRES_DIR_PATH . 'includes/clea-presentation-enqueues.php'; 
 
-	// fonctions pour générer des boîtes avec des couleurs à tester
-	require_once CLEA_PRES_DIR_PATH . 'includes/clea-presentation-custom-post-types.php'; 
-	
-	// générer une page de réglages de l'extension pour l'administrateur
-	require_once CLEA_PRES_DIR_PATH . 'admin/clea-presentation-settings-page.php';
-	require_once CLEA_PRES_DIR_PATH . 'admin/clea-presentation-settings-page-2.php';
+// générer les custom post types
+require_once CLEA_PRES_DIR_PATH . 'includes/clea-presentation-custom-post-types.php'; 
 
+// Affichage des custom post types
+require_once CLEA_PRES_DIR_PATH . 'includes/clea-presentation-display.php'; 
 
+// Edition et listing des présentations et écrans côté admin
+require_once CLEA_PRES_DIR_PATH . 'admin/clea-presentation-edit.php'; 
+
+// générer une page de réglages de l'extension pour l'administrateur
+require_once CLEA_PRES_DIR_PATH . 'admin/clea-presentation-settings-page.php';
+require_once CLEA_PRES_DIR_PATH . 'admin/clea-presentation-settings-page-2.php';
 
 /******************************************************************************
 * Actions à réaliser à l'initialisation et l'activation du plugin
@@ -60,17 +64,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 	add_action( 'init', 'clea_presentation_taxonomy1' );
 	add_action( 'init', 'clea_presentation_taxonomy2' );
 	add_action( 'init', 'clea_presentation_thumbnails' );
-		
-	function clea_presentation_activation() {
-		// register the custom post types and taxonomies
-		clea_presentation_custom_types();
-		clea_presentation_taxonomy1();
-		clea_presentation_taxonomy2();
-		// reflush (in order to create the new permalink system)
-		// see http://code.tutsplus.com/articles/the-rewrite-api-post-types-taxonomies--wp-25488
-		flush_rewrite_rules();
-	}
-	register_activation_hook(__FILE__, 'clea_presentation_activation');
+
+function clea_presentation_thumbnails() {
+	// add theme support for thumbnails in these custom post types
+	// source https://wordpress.org/support/topic/custom-post-type-ui-featured-image-not-showing
+
+	// This theme uses post thumbnails
+	add_theme_support( 'post-thumbnails', array( 'presentation', 'page', 'post' ) );
+}
+	
+function clea_presentation_activation() {
+	// register the custom post types and taxonomies
+	clea_presentation_custom_types();
+	clea_presentation_taxonomy1();
+	clea_presentation_taxonomy2();
+	// reflush (in order to create the new permalink system)
+	// see http://code.tutsplus.com/articles/the-rewrite-api-post-types-taxonomies--wp-25488
+	flush_rewrite_rules();
+}
+register_activation_hook(__FILE__, 'clea_presentation_activation');
 	
 /*----------------------------------------------------------------------------*
  * deactivation and uninstall

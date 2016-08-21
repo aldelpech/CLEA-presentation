@@ -10,6 +10,10 @@ Ce plugin a été créé sur la base d'un plugin de Chris Knowles
 ==========
 ## changelog
 
+V0-9
+* yet another split among more files ! 
+* uses either the templates in plugins /template directory or the theme's /template directory
+
 V0-8 
 * tests de pages d'options en cours
 

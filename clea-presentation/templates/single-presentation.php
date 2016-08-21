@@ -1,6 +1,6 @@
 <?php
 /*
-Template Name: pages produits standard du plugin
+Template Name: page produits standard du plugin
 */
 ?>
 
@@ -11,9 +11,9 @@ Template Name: pages produits standard du plugin
 	
 
 	<div class="flowtime">
-
 	<?php while ( have_posts() ) : the_post(); ?>
 		<div class="ft-section" data-id="section-1">
+		<h2>plugin's single presentation template</h2>
 		<div id="/section-1/page-1" class="ft-page" data-id="page-1" data-title="<?php echo $post->post_title; ?>" >
 		
 			<div class="posts-wrapper">
