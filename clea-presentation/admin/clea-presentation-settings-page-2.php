@@ -20,8 +20,8 @@ function yasr_add_pages() {
 	// Add settings Page
 	add_submenu_page(
           'edit.php?post_type=presentation', 							// plugin menu slug
-          __( 'Yet option page', 'clea-presentation' ), 				// page title
-          __( 'Yet Options', 'clea-presentation' ), 					// menu title
+          __( '2 Yet option page', 'clea-presentation' ), 				// page title
+          __( '2 Yet Options', 'clea-presentation' ), 					// menu title
           'manage_options',               		// capability required to see the page
           'yasr_settings_page',                	// admin page slug, unique ID
           'yasr_settings_page_content'          // callback function to display the options page

@@ -27,7 +27,7 @@ function clea_presentation_plugin_menu(  ) {
 	add_submenu_page(
 		'edit.php?post_type=presentation', 
 		'Titre', 
-		'Options', 
+		'1 Options', 
 		'manage_options', 
 		'clea-presentation-menu2', 
 		'clea_presentation_plugin_options' 
@@ -36,8 +36,8 @@ function clea_presentation_plugin_menu(  ) {
 	// Add another submenu (test 2)
 	add_submenu_page(
           'edit.php?post_type=presentation', 	// plugin menu slug
-          __( 'WPORG Options', 'wporg' ), // page title
-          __( 'WPORG Options', 'wporg' ), // menu title
+          __( '1 Options', 'wporg' ), // page title
+          __( '1 WPORG Options', 'wporg' ), // menu title
           'manage_options',               // capability required to see the page
           'wporg_options',                // admin page slug, e.g. options-general.php?page=wporg_options
           'wporg_options_page'            // callback function to display the options page
@@ -143,7 +143,7 @@ function clea_presentation_plugin_options(  ) {
 
     // header
 
-    echo "<h2>" . __( 'Paramétrage des Présentations', 'clea-presentation' ) . "</h2>";
+    echo "<h2>" . __( "N'utilise pas l'API", 'clea-presentation' ) . "</h2>";
 
     // settings form
     
