@@ -2,188 +2,287 @@
 /**
  *
  * Générer une page de réglage de l'extension
- *
+ * http://www.mendoweb.be/blog/wordpress-settings-api-multiple-sections-on-same-page/ 
+ * http://wordpress.stackexchange.com/questions/143263/cant-output-do-settings-sections-cant-understand-why
+ * http://wpsettingsapi.jeroensormani.com/settings-generator
+ * http://www.mendoweb.be/blog/wordpress-settings-api-multiple-sections-on-same-page/
+ * http://wordpress.stackexchange.com/questions/100023/settings-api-with-arrays-example
  *
  * @link       	http://parcours-performance.com/anne-laure-delpech/#ald
- * @since      	0.8.0
+ * @since      	0.9.1
  *
  * @package    clea-presentation
  * @subpackage clea-presentation/includes
  */
 
+ 
+$setting_page = 'clea-presentation-settings-3' ;
+$setting_group = $setting_page ;	// the group used for setting_fields 
+// if $setting_group is not = to $setting_page : "Error: options page not found"...
 
-// source https://codex.wordpress.org/Administration_Menus
+// Hook to admin_menu the clea_presentation_add_pages function above 
+add_action( 'admin_menu', 'clea_presentation_add_admin_menu' );
 
-// create a menu page for this plugin
-add_action( 'admin_menu', 'clea_presentation_plugin_menu' );
+// define the plugin's settings for section 1 & 2
+add_action( 'admin_init', 'clea_presentation_settings_section_1_init' );
 
-// add a link under the plugin name in the installed plugin page
-// source is contact form 7 plugin !
-add_filter( 'plugin_action_links', 'clea_presentation_add_action_links', 10, 2 );
+function clea_presentation_add_admin_menu() {
 
-function clea_presentation_plugin_menu(  ) { 
-
-	// add option page in a custom post type menu block
+	global $setting_page ;
+	
+	// Add settings Page
 	add_submenu_page(
-		'edit.php?post_type=presentation', 
-		'Titre', 
-		'1 Options', 
-		'manage_options', 
-		'clea-presentation-menu2', 
-		'clea_presentation_plugin_options' 
+          'edit.php?post_type=presentation', 							// plugin menu slug
+          __( 'option page 3', 'clea-presentation' ), 				// page title
+          __( 'Options 3', 'clea-presentation' ), 					// menu title
+          'manage_options',               		// capability required to see the page
+          $setting_page,                	// admin page slug, unique ID
+          'clea_presentation_options_page'          // callback function to display the options page
+    );
+
+}
+
+function clea_presentation_settings_section_1_init(  ) { 
+
+	global $setting_page ;
+	global $setting_group ;
+	global $setting_name ;
+	
+	// add the sections
+	add_settings_section( 
+		'our_first_section', 
+		__( 'My First Section Title', 'clea-presentation' ), 
+		'clea_presentation_settings_section_callback' , 
+		$setting_page 		// menu slug
 	);
 
-	// Add another submenu (test 2)
-	add_submenu_page(
-          'edit.php?post_type=presentation', 	// plugin menu slug
-          __( '1 Options', 'wporg' ), // page title
-          __( '1 WPORG Options', 'wporg' ), // menu title
-          'manage_options',               // capability required to see the page
-          'wporg_options',                // admin page slug, e.g. options-general.php?page=wporg_options
-          'wporg_options_page'            // callback function to display the options page
-    );
+	add_settings_section( 
+		'our_second_section', 
+		__( 'My second Section Title', 'clea-presentation' ), 
+		'clea_presentation_settings_section_callback' , 
+		$setting_page 
+	);
+	
+	add_settings_section( 
+		'our_third_section', 
+		__( 'My third Section Title', 'clea-presentation' ),  
+		'clea_presentation_settings_section_callback' , 
+		$setting_page 
+	);
+
+	// add the fields
+	add_settings_field( 
+		'clea_presentation_text_field_0', 
+		__( 'Field 0 description', 'clea-presentation' ), 
+		'clea_presentation_text_field_0_render', 
+		$setting_page, 
+		'our_first_section',
+		array (
+            'label_for'   => 'label1', // makes the field name clickable,
+            'name'        => 'text', // value for 'name' attribute
+            'value'       => 'test value',
+            'option_name' => 'reee'
+        )
+	);
+	
+	add_settings_field( 
+		'clea_presentation_checkbox_field_1', 
+		__( 'Settings field description', 'clea-presentation' ), 
+		'clea_presentation_checkbox_field_1_render', 
+		$setting_page, 
+		'our_first_section' 
+	);
+
+	add_settings_field( 
+		'clea_presentation_radio_field_2', 
+		__( 'Settings field description', 'clea-presentation' ), 
+		'clea_presentation_radio_field_2_render', 
+		$setting_page, 
+		'our_second_section' 
+	);
+
+
+	add_settings_field( 
+		'clea_presentation_textarea_field_3', 
+		__( 'Textarea field 3', 'clea-presentation' ), 
+		'clea_presentation_textarea_field_3_render', 
+		$setting_page, 
+		'our_third_section' 
+	);
+
+	add_settings_field( 
+		'clea_presentation_radio_field_4', 
+		__( 'Settings field description', 'clea-presentation' ), 
+		'clea_presentation_radio_field_4_render', 
+		$setting_page, 
+		'our_third_section' 
+	);
+
+	add_settings_field( 
+		'clea_presentation_select_field_5', 
+		__( 'Settings field description', 'clea-presentation' ), 
+		'clea_presentation_select_field_5_render', 
+		$setting_page, 
+		'our_third_section' 
+	);
+
+	add_settings_field( 
+		'clea_presentation_text_field_2', 
+		__( 'text field 2 description', 'clea-presentation' ), 
+		'clea_presentation_text_field_2_render', 
+		$setting_page, 
+		'our_third_section' 
+	);
+
+	// register all the settings
+	register_setting( $setting_group, $setting_page , 'clea_presentation_validator' ) ;
 	
 }
 
-/* TEST 2 
-* 
-* source https://developer.wordpress.org/plugins/settings/creating-and-using-options/
-*/
-/**
- * Register the settings
- */
-function wporg_register_settings() {
-
-    register_setting(
-        'wporg_options',  // settings section
-        'wporg_hide_meta' // setting name
-     );
-	 
-	 
+function clea_presentation_validator( $input ) {
+	
+	// http://code.tutsplus.com/tutorials/the-complete-guide-to-the-wordpress-settings-api-part-7-validation-sanitisation-and-input-i--wp-25289
+	
+	 // Create our array for storing the validated options
+    $output = array();
+     
+    // Loop through each of the incoming options
+    foreach( $input as $key => $value ) {
+         
+        // Check to see if the current option has a value. If so, process it.
+        if( isset( $input[$key] ) ) {
+         
+            // Strip all HTML and PHP tags and properly handle quoted strings
+            $output[$key] = strip_tags( stripslashes( $input[ $key ] ) );
+             
+        } // end if
+         
+    } // end foreach
+     
+    // Return the array processing any additional functions filtered by this action
+    return apply_filters( 'clea_presentation_validator', $output, $input );
+ 
 }
-add_action( 'admin_init', 'wporg_register_settings' );
- 
-/**
- * Build the options page
- */
-function wporg_options_page() {
-     if ( ! isset( $_REQUEST['settings-updated'] ) )
-          $_REQUEST['settings-updated'] = false; ?>
- 
-     <div class="wrap">
- 
-          <?php if ( false !== $_REQUEST['settings-updated'] ) : ?>
-               <div class="updated fade"><p><strong><?php _e( 'WPORG Options saved!', 'wporg' ); ?></strong></p></div>
-          <?php endif; ?>
-           
-          <h2><?php echo esc_html( get_admin_page_title() ); ?></h2>
-           
-          <div id="poststuff">
-               <div id="post-body">
-                    <div id="post-body-content">
-                         <form method="post" action="options.php">
-                              <?php settings_fields( 'wporg_options' ); ?>
-                              <?php $options = get_option( 'wporg_hide_meta' ); ?>
-                              <table class="form-table">
-                                   <tr valign="top"><th scope="row"><?php _e( 'Hide the post meta information on posts?', 'wporg' ); ?></th>
-                                        <td>
-                                             <select name="wporg_hide_meta[hide_meta]" id="hide-meta">
-                                                  <?php $selected = $options['hide_meta']; ?>
-                                                  <option value="1" <?php selected( $selected, 1 ); ?> >Yes, hide the post meta!</option>
-                                                  <option value="0" <?php selected( $selected, 0 ); ?> >No, show my post meta!</option>
-                                             </select><br />
-                                             <label class="description" for="wporg_hide_meta[hide_meta]"><?php _e( 'Toggles whether or not to display post meta under posts.', 'wporg' ); ?></label>
-                                        </td>
-                                   </tr>
-                              </table>
-							  <?php submit_button(); ?>
-                         </form>
-                    </div> <!-- end post-body-content -->
-               </div> <!-- end post-body -->
-          </div> <!-- end poststuff -->
-     </div>
+
+
+function clea_presentation_text_field_2_render(  ) { 
+
+	global $setting_page ;
+	$options = get_option( $setting_page );
+	?>
+	<input type='text' name='<?php echo $setting_page ?>[clea_presentation_text_field_2]' value='<?php echo sanitize_text_field( $options['clea_presentation_text_field_2'] ); ?>'>
+	<?php
+
+}
+
+function clea_presentation_text_field_0_render(  ) { 
+
+	global $setting_page ;
+	$options = get_option( $setting_page );
+	?>
+	<input type='text' name='<?php echo $setting_page ?>[clea_presentation_text_field_0]' value='<?php echo sanitize_text_field( $options['clea_presentation_text_field_0'] ); ?>'>
+	<?php
+}
+
+
+function clea_presentation_checkbox_field_1_render(  ) { 
+
+	global $setting_page ;
+	$options = get_option( $setting_page );
+	?>
+	<input type='checkbox' name='<?php echo $setting_page ?>[clea_presentation_checkbox_field_1]' <?php checked( $options['clea_presentation_checkbox_field_1'], 1 ); ?> value='1'>
+	<?php
+
+}
+
+
+function clea_presentation_radio_field_2_render(  ) { 
+
+	global $setting_page ;
+	$options = get_option( $setting_page );
+	?>
+	<input type='radio' name='<?php echo $setting_page ?>[clea_presentation_radio_field_2]' <?php checked( $options['clea_presentation_radio_field_2'], 1 ); ?> value='1'>
+	<?php
+
+}
+
+
+function clea_presentation_textarea_field_3_render(  ) { 
+
+	global $setting_page ;
+	$options = get_option( $setting_page );
+	?>
+	<textarea cols='40' rows='5' name='<?php echo $setting_page ?>[clea_presentation_textarea_field_3]'> 
+		<?php echo sanitize_text_field( $options['clea_presentation_textarea_field_3'] ); ?>
+ 	</textarea>
+	<?php
+
+}
+
+
+function clea_presentation_radio_field_4_render(  ) { 
+
+	global $setting_page ;
+	$options = get_option( $setting_page );
+	?>
+	<input type='radio' name='<?php echo $setting_page ?>[clea_presentation_radio_field_4]' <?php checked( $options['clea_presentation_radio_field_4'], 1 ); ?> value='1'>
+	<?php
+
+}
+
+
+function clea_presentation_select_field_5_render(  ) { 
+
+	global $setting_page ;
+	$options = get_option( $setting_page );
+	?>
+	<select name='<?php echo $setting_page ?>[clea_presentation_select_field_5]'>
+		<option value='1' <?php selected( $options['clea_presentation_select_field_5'], 1 ); ?>>Option 1</option>
+		<option value='2' <?php selected( $options['clea_presentation_select_field_5'], 2 ); ?>>Option 2</option>
+	</select>
+
 <?php
+
 }
 
-/* TEST 1 */
-function clea_presentation_plugin_options(  ) { 
 
-	if ( !current_user_can( 'manage_options' ) )  {
-		wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
+function clea_presentation_settings_section_callback( $arguments  ) { 
+
+	switch( $arguments['id'] ){
+		case 'our_first_section':
+			$description = __( 'This is the first description here!', 'clea-presentation' ); 
+			break;
+		case 'our_second_section':
+			$description = __( 'This one is number two!', 'clea-presentation' ); 
+			break;
+		case 'our_third_section':
+			$description = __( 'Third time is the charm!', 'clea-presentation' ); 	
+			break;
 	}
 
-	// variables for the field and option names 
-    $opt_name = 'mt_favorite_color';
-    $hidden_field_name = 'mt_submit_hidden';
-    $data_field_name = 'mt_favorite_color';
+	echo $description ;
 
-    // Read in existing option value from database
-    $opt_val = get_option( $opt_name );
-
-    // See if the user has posted us some information
-    // If they did, this hidden field will be set to 'Y'
-    if( isset($_POST[ $hidden_field_name ]) && $_POST[ $hidden_field_name ] == 'Y' ) {
-        // Read their posted value
-        $opt_val = $_POST[ $data_field_name ];
-
-        // Save the posted value in the database
-        update_option( $opt_name, $opt_val );
-
-        // Put a "settings saved" message on the screen
-
-?>
-<div class="updated"><p><strong><?php _e('settings saved.', 'clea-presentation' ); ?></strong></p></div>
-<?php
-
-    }
-
-    // Now display the settings editing screen
-
-    echo '<div class="wrap">';
-
-    // header
-
-    echo "<h2>" . __( "N'utilise pas l'API", 'clea-presentation' ) . "</h2>";
-
-    // settings form
-    
-	echo "<br /> page URL :<br />" ;
-	menu_page_url( 'clea-presentation-menu2', true ) ; 
-	echo "<br /> " ;
-	
-    ?>
-
-<form name="form1" method="post" action="">
-<input type="hidden" name="<?php echo $hidden_field_name; ?>" value="Y">
-
-<p><?php _e("Favorite Color:", 'menu-test' ); ?> 
-<input type="text" name="<?php echo $data_field_name; ?>" value="<?php echo $opt_val; ?>" size="20">
-</p><hr />
-
-<p class="submit">
-<input type="submit" name="Submit" class="button-primary" value="<?php esc_attr_e('Save Changes') ?>" />
-</p>
-
-</form>
-</div>
-
-<?php
-	
 }
 
 
-function clea_presentation_add_action_links( $links, $file ) {
-	if ( $file != CLEA_PRES_BASENAME )
-		return $links;
+function clea_presentation_options_page(  ) { 
 
-	$settings_link = '<a href="' . menu_page_url( 'clea-presentation-menu2', false ) . '">'
-		. esc_html( __( 'Settings', 'clea-presentation' ) ) . '</a>';
+	global $setting_page ;
+	?>
+	<div class="wrap">
+	<form action='options.php' method='post'>
 
-	array_unshift( $links, $settings_link );
+		<h2>clea-presentation-settings</h2>
 
-	return $links;
+		<?php
+		settings_fields( $setting_page );
+		do_settings_sections( $setting_page );
+		submit_button();
+		?>
+
+	</form>
+	</div>
+	<?php
+
 }
 
-
-
-?>
