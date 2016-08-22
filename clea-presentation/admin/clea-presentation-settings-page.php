@@ -46,97 +46,178 @@ function clea_presentation_settings_section_1_init(  ) {
 
 	global $setting_page ;
 	global $setting_group ;
-	global $setting_name ;
+
+	$sections = array(
+		array(
+			'section_name' 	=> 'our_first_section',
+			'section_title'	=> __( 'Pages récapitulative', 'clea-presentation' ),
+			'section_callbk'=> 'clea_presentation_settings_section_callback' ,
+			'section_page'	=> $setting_page
+		),
+		array(
+			'section_name' 	=> 'our_second_section',
+			'section_title'	=> __( 'Ecrans', 'clea-presentation' ),
+			'section_callbk'=> 'clea_presentation_settings_section_callback' ,
+			'section_page'	=> $setting_page
+		),
+		array(
+			'section_name' 	=> 'our_third_section',
+			'section_title'	=> __( 'Autres réglages', 'clea-presentation' ),
+			'section_callbk'=> 'clea_presentation_settings_section_callback' ,
+			'section_page'	=> $setting_page
+		)
+	);
+
+	foreach( $sections as $section ) {
+		
+		add_settings_section( 
+			$section[ 'section_name' ], 
+			$section[ 'section_title' ], 
+			$section[ 'section_callbk' ], 
+			$section[ 'section_page' ]
+		);
+		
+	}
+
+	$section_1_fields = array(
+		array(
+			'field_id' 		=> 'presentation_title',
+			'field_desc'	=> __( 'titre de la page récapitulative', 'clea-presentation' ),
+			'field_callbk'	=> 'clea_presentation_field_callback' ,
+			'section_name'	=> 'our_first_section',
+			'label'			=> __( 'Le titre de la page', 'clea-presentation' ),
+			'type'			=> 'text',
+			'options'		=> false,
+			'placeholder'	=> '#cccccc',
+			'helper'		=> __( 'help 1', 'clea-presentation' ),
+			'default'		=> '#cc11cc',
+			'supplement'	=> ''
+		), 	
+		array(
+			'field_id' 		=> 'page_baseline',
+			'field_desc'	=> __( 'baseline pour la liste de tous les produits', 'clea-presentation' ),
+			'field_callbk'	=> 'clea_presentation_field_callback' ,
+			'section_name'	=> 'our_first_section',
+			'label'			=> __( 'La baseline de la page récapitulative', 'clea-presentation' ),
+			'type'			=> 'text',
+			'options'		=> false,
+			'placeholder'	=> 'votre texte ici',
+			'helper'		=> __( 'Permet de mettre un message compact avant la liste de tous les produits', 'clea-presentation' ),
+			'default'		=> '',
+			'supplement'	=> ''
+		), 
+		array(
+			'field_id' 		=> 'breadcrumb_title',
+			'field_desc'	=> __( 'titre pour les breadcrumbs', 'clea-presentation' ),
+			'field_callbk'	=> 'clea_presentation_field_callback' ,
+			'section_name'	=> 'our_first_section',
+			'label'			=> __( 'Le nom qui est affiché dans le fil d\'Ariane', 'clea-presentation' ),
+			'type'			=> 'text',
+			'options'		=> false,
+			'placeholder'	=> 'un titre court',
+			'helper'		=> __( 'Aide les utilisateurs à revenir en arrière', 'clea-presentation' ),
+			'default'		=> '',
+			'supplement'	=> ''
+		), 
+		array(
+			'field_id' 		=> 'read_more_txt',
+			'label'			=> __( 'Texte du "read more"', 'clea-presentation' ),
+			'field_callbk'	=> 'clea_presentation_field_callback' ,
+			'section_name'	=> 'our_first_section',
+			'type'			=> 'text',
+			'options'		=> false,
+			'placeholder'	=> 'JJ/MM/YYYY',
+			'helper'		=> __( 'le texte qui finit les résumé', 'clea-presentation' ),
+			'default'		=> '',
+			'supplement'	=> ''
+		), 	
+		array(
+			'field_id' 		=> 'presentation_layout',
+			'label'			=> __( 'Aspect des pages de présentation', 'clea-presentation' ),
+			'field_callbk'	=> 'clea_presentation_field_callback' ,
+			'section_name'	=> 'our_first_section',
+			'type'			=> 'select',
+			'options'		=> array(
+								__( 'Pleine page', 'clea-presentation' ) 	=> 'full',
+								__( 'barre lat. gauche', 'clea-presentation' )	=> 'gauche',
+								__( 'barre lat. droite', 'clea-presentation' )	=> 'droit'
+							),
+			'placeholder'	=> 'JJ/MM/YYYY',
+			'helper'		=> __( 'help 2', 'clea-presentation' ),
+			'default'		=> 'full',
+			'supplement'	=> __( 'Un seul choix possible', 'clea-presentation' ),
+		),
+		array(
+			'field_id' 		=> 'product_list_layout',
+			'label'			=> __( 'Présentation de la liste de produits', 'clea-presentation' ),
+			'field_callbk'	=> 'clea_presentation_field_callback' ,
+			'section_name'	=> 'our_first_section',
+			'type'			=> 'select',
+			'options'		=> array(
+								'style "articles PP"' 	=> '1',
+								'style "cartes"'	=> '2',
+								'autre'	=> '3'
+							),
+			'placeholder'	=> '',
+			'helper'		=> __( 'pour définir la présentation de chaque produit dans la liste récapitulative', 'clea-presentation' ),
+			'default'		=> '2',
+			'supplement'	=> __( 'Un seul choix possible', 'clea-presentation' ),
+		),
+		array(
+			'field_id' 		=> 'author',
+			'label'			=> __( 'Afficher l\'auteur', 'clea-presentation' ),
+			'field_callbk'	=> 'clea_presentation_field_callback' ,
+			'section_name'	=> 'our_first_section',
+			'type'			=> 'select',
+			'options'		=> array(
+								'oui' 	=> true,
+								'non'	=> false,
+							),
+			'placeholder'	=> '',
+			'helper'		=> '',
+			'default'		=> true,
+			'supplement'	=> __( 'Un seul choix possible', 'clea-presentation' ),
+		),		
+		array(
+			'field_id' 		=> 'publish_date',
+			'label'			=> __( 'Afficher la date de publication', 'clea-presentation' ),
+			'field_callbk'	=> 'clea_presentation_field_callback' ,
+			'section_name'	=> 'our_first_section',
+			'type'			=> 'select',
+			'options'		=> array(
+								'oui' 	=> true,
+								'non'	=> false,
+							),
+			'placeholder'	=> '',
+			'helper'		=> '',
+			'default'		=> true,
+			'supplement'	=> __( 'Un seul choix possible', 'clea-presentation' ),
+		),	
+		array(
+			'field_id' 		=> 'backgnd_color_ecrans',
+			'label'			=> __( 'couleur de fond des écrans"', 'clea-presentation' ),
+			'field_callbk'	=> 'clea_presentation_field_callback' ,
+			'section_name'	=> 'our_first_section',
+			'type'			=> 'text',
+			'options'		=> false,
+			'placeholder'	=> '#BBBBBB',
+			'helper'		=> __( 'le texte qui finit les résumé', 'clea-presentation' ),
+			'default'		=> '#c3c3c3',
+			'supplement'	=> ''
+		),		
+	) ;
 	
-	// add the sections
-	add_settings_section( 
-		'our_first_section', 
-		__( 'My First Section Title', 'clea-presentation' ), 
-		'clea_presentation_settings_section_callback' , 
-		$setting_page 		// menu slug
-	);
+	foreach( $section_1_fields as $field ){
 
-	add_settings_section( 
-		'our_second_section', 
-		__( 'My second Section Title', 'clea-presentation' ), 
-		'clea_presentation_settings_section_callback' , 
-		$setting_page 
-	);
-	
-	add_settings_section( 
-		'our_third_section', 
-		__( 'My third Section Title', 'clea-presentation' ),  
-		'clea_presentation_settings_section_callback' , 
-		$setting_page 
-	);
-
-	// add the fields
-	add_settings_field( 
-		'clea_presentation_text_field_0', 
-		__( 'Field 0 description', 'clea-presentation' ), 
-		'clea_presentation_text_field_0_render', 
-		$setting_page, 
-		'our_first_section',
-		array (
-            'label_for'   => 'label1', 
-            'name'        => 'text', 
-            'value'       => 'test value',
-            'option_name' => 'reee'
-        )
-	);
-	
-	add_settings_field( 
-		'clea_presentation_checkbox_field_1', 
-		__( 'élément 1', 'clea-presentation' ), 
-		'clea_presentation_checkbox_field_1_render', 
-		$setting_page, 
-		'our_first_section',
-		array (
-            'field_name' 	=> 'clea_presentation_checkbox_field_1',
-			'help'			=> __( 'Aide pour ce champs', 'clea-presentation' )
-        ) 
-	);
-
-	add_settings_field( 
-		'clea_presentation_radio_field_2', 
-		__( 'Settings field description', 'clea-presentation' ), 
-		'clea_presentation_radio_field_2_render', 
-		$setting_page, 
-		'our_second_section' 
-	);
-
-
-	add_settings_field( 
-		'clea_presentation_textarea_field_3', 
-		__( 'Textarea field 3', 'clea-presentation' ), 
-		'clea_presentation_textarea_field_3_render', 
-		$setting_page, 
-		'our_third_section' 
-	);
-
-	add_settings_field( 
-		'clea_presentation_radio_field_4', 
-		__( 'Settings field description', 'clea-presentation' ), 
-		'clea_presentation_radio_field_4_render', 
-		$setting_page, 
-		'our_third_section' 
-	);
-
-	add_settings_field( 
-		'clea_presentation_select_field_5', 
-		__( 'Settings field description', 'clea-presentation' ), 
-		'clea_presentation_select_field_5_render', 
-		$setting_page, 
-		'our_third_section' 
-	);
-
-	add_settings_field( 
-		'clea_presentation_text_field_2', 
-		__( 'text field 2 description', 'clea-presentation' ), 
-		'clea_presentation_text_field_2_render', 
-		$setting_page, 
-		'our_third_section' 
-	);
+		add_settings_field( 
+			$field['field_id'], 
+			$field['label'], 
+			$field['field_callbk'],  
+			$setting_page, 
+			$field['section_name'], 
+			$field 
+		);
+	}
 
 	// register all the settings
 	register_setting( $setting_group, $setting_page , 'clea_presentation_validator' ) ;
@@ -169,89 +250,62 @@ function clea_presentation_validator( $input ) {
 }
 
 
-
-
-function clea_presentation_text_field_2_render( $args ) { 
-
+function clea_presentation_field_callback( $arguments ) {
+	
+	/*
+		array(
+			'field_id' 		=> 'field_2',
+			'label'			=> __( 'champs 2', 'clea-presentation' ),
+			'field_callbk'	=> 'clea_presentation_field_callback' ,
+			'section_name'	=> 'our_first_section',
+			'type'			=> 'text',
+			'options'		=> false,
+			'placeholder'	=> 'JJ/MM/YYYY',
+			'helper'		=> __( 'help 2', 'clea-presentation' ),
+			'default'		=> '01/08/2016',
+			'supplement'	=> ''
+		), 	
+	*/
+	
+	
 	global $setting_page ;
 	$options = get_option( $setting_page );
-	?>
-	<input type='text' name='<?php echo $setting_page ?>[clea_presentation_text_field_2]' value='<?php echo sanitize_text_field( $options['clea_presentation_text_field_2'] ); ?>'>
-	<h4>display the $args</h4>
-	<p><?php var_dump( $args ) ; ?></p>
-	<?php
+	
+	$value = get_option( $arguments['field_id'] );
+	
+	if( ! $value ) { // If no value exists
+        $value = $arguments['default']; // Set to our default
+    }
+	
+	// Check which type of field we want
+    switch( $arguments['type'] ){
+		
+        case 'text': // If it is a text field
+            printf( '<input name="%1$s" id="%1$s" type="%2$s" placeholder="%3$s" value="%4$s" />', $arguments['field_id'], $arguments['type'], $arguments['placeholder'], $value );
+            break;
+		case 'textarea': // If it is a textarea
+			printf( '<textarea name="%1$s" id="%1$s" placeholder="%2$s" rows="5" cols="50">%3$s</textarea>', $arguments['field_id'], $arguments['placeholder'], $value );
+			break;
+		case 'select': // If it is a select dropdown
+			if( ! empty ( $arguments['options'] ) && is_array( $arguments['options'] ) ){
+				$options_markup = '';
+				foreach( $arguments['options'] as $key => $label ){
+					$options_markup .= sprintf( '<option value="%s" %s>%s</option>', $key, selected( $value, $key, false ), $label );
+				}
+				printf( '<select name="%1$s" id="%1$s">%2$s</select>', $arguments['field_id'], $options_markup );
+			}
+			break;
+    }
 
-}
+	// If there is help text
+    if( $helper = $arguments['helper'] ){
+        printf( '<span class="helper"> %s</span>', $helper ); // Show it
+    }
 
-function clea_presentation_text_field_0_render( $args ) { 
-
-	global $setting_page ;
-	$options = get_option( $setting_page );
-	?>
-	<input type='text' name='<?php echo $setting_page ?>[clea_presentation_text_field_0]' value='<?php echo sanitize_text_field( $options['clea_presentation_text_field_0'] ); ?>'>
-	<h4>display the $args</h4>
-	<p><?php var_dump( $args ) ; ?></p>
-	<?php
-}
-
-
-function clea_presentation_checkbox_field_1_render( $args ) { 
-
-	global $setting_page ;
-	$options = get_option( $setting_page );
-	?>
-	<input type='checkbox' name='<?php echo $setting_page ?>[clea_presentation_checkbox_field_1]' <?php checked( $options['clea_presentation_checkbox_field_1'], 1 ); ?> value='1'>
-	<?php	
-}
-
-
-function clea_presentation_radio_field_2_render(  ) { 
-
-	global $setting_page ;
-	$options = get_option( $setting_page );
-	?>
-	<input type='radio' name='<?php echo $setting_page ?>[clea_presentation_radio_field_2]' <?php checked( $options['clea_presentation_radio_field_2'], 1 ); ?> value='1'>
-	<?php
-
-}
-
-
-function clea_presentation_textarea_field_3_render(  ) { 
-
-	global $setting_page ;
-	$options = get_option( $setting_page );
-	?>
-	<textarea cols='40' rows='5' name='<?php echo $setting_page ?>[clea_presentation_textarea_field_3]'> 
-		<?php echo sanitize_text_field( $options['clea_presentation_textarea_field_3'] ); ?>
- 	</textarea>
-	<?php
-
-}
-
-
-function clea_presentation_radio_field_4_render(  ) { 
-
-	global $setting_page ;
-	$options = get_option( $setting_page );
-	?>
-	<input type='radio' name='<?php echo $setting_page ?>[clea_presentation_radio_field_4]' <?php checked( $options['clea_presentation_radio_field_4'], 1 ); ?> value='1'>
-	<?php
-
-}
-
-
-function clea_presentation_select_field_5_render(  ) { 
-
-	global $setting_page ;
-	$options = get_option( $setting_page );
-	?>
-	<select name='<?php echo $setting_page ?>[clea_presentation_select_field_5]'>
-		<option value='1' <?php selected( $options['clea_presentation_select_field_5'], 1 ); ?>>Option 1</option>
-		<option value='2' <?php selected( $options['clea_presentation_select_field_5'], 2 ); ?>>Option 2</option>
-	</select>
-
-<?php
-
+	// If there is supplemental text
+    if( $suppliment = $arguments['supplement'] ){
+        printf( '<p class="description">%s</p>', $suppliment ); // Show it
+    }
 }
 
 
@@ -259,17 +313,17 @@ function clea_presentation_settings_section_callback( $arguments  ) {
 
 	switch( $arguments['id'] ){
 		case 'our_first_section':
-			$description = __( 'This is the first description here!', 'clea-presentation' ); 
+			$description = __( 'Réglage de la page récapitulative', 'clea-presentation' ); 
 			break;
 		case 'our_second_section':
-			$description = __( 'This one is number two!', 'clea-presentation' ); 
+			$description = __( 'Réglages des écrans', 'clea-presentation' ); 
 			break;
 		case 'our_third_section':
-			$description = __( 'Third time is the charm!', 'clea-presentation' ); 	
+			$description = __( 'Autres réglages : témoignages, Yoast SEO, ...', 'clea-presentation' ); 	
 			break;
 	}
 
-	echo $description ;
+	echo "<p><em>" . $description ."</em></p>" ;
 
 }
 
@@ -281,7 +335,7 @@ function clea_presentation_options_page(  ) {
 	<div class="wrap">
 	<form action='options.php' method='post'>
 
-		<h2><?php echo  __( 'Titre de cette page', 'clea-presentation' ) ?></h2>
+		<h1><?php  echo esc_html( get_admin_page_title() ); ?></h1>
 		
 
 		<?php
