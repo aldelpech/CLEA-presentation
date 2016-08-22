@@ -16,7 +16,7 @@
  */
 
  
-$setting_page = 'clea_presentation_settings' ;
+$setting_page = 'clea-presentation-settings-3' ;
 $setting_group = $setting_page ;	// the group used for setting_fields 
 // if $setting_group is not = to $setting_page : "Error: options page not found"...
 
@@ -33,8 +33,8 @@ function clea_presentation_add_admin_menu() {
 	// Add settings Page
 	add_submenu_page(
           'edit.php?post_type=presentation', 							// plugin menu slug
-          __( 'Option des Présentations', 'clea-presentation' ), 				// page title
-          __( 'Options', 'clea-presentation' ), 					// menu title
+          __( 'option page 3', 'clea-presentation' ), 				// page title
+          __( 'Options 3', 'clea-presentation' ), 					// menu title
           'manage_options',               		// capability required to see the page
           $setting_page,                	// admin page slug, unique ID
           'clea_presentation_options_page'          // callback function to display the options page

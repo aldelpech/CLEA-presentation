@@ -54,6 +54,7 @@ require_once CLEA_PRES_DIR_PATH . 'admin/clea-presentation-edit.php';
 
 // générer une page de réglages de l'extension pour l'administrateur
 require_once CLEA_PRES_DIR_PATH . 'admin/clea-presentation-settings-page.php';
+require_once CLEA_PRES_DIR_PATH . 'admin/clea-presentation-settings-page-test.php';
 
 /******************************************************************************
 * Actions à réaliser à l'initialisation et l'activation du plugin
