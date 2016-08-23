@@ -11,6 +11,17 @@
  * @subpackage clea-presentation/includes
  */
 
+
+/**********************************************************************
+
+* to set the title of the setting page see clea_presentation_add_admin_menu()
+* to set the description of the setting page see clea_presentation_options_page()
+* to set other content in the settings page see clea_presentation_options_page()
+* to set the titles of the sections see clea_presentation_settings_sections_val()
+* to set the description of each section see clea_presentation_settings_section_callback()
+* to set everything for the fields see clea_presentation_settings_fields_val()
+
+**********************************************************************/
  
 $setting_page = 'clea_presentation_settings' ;
 $setting_group = $setting_page ;	// the group used for setting_fields 
@@ -170,22 +181,21 @@ function clea_presentation_field_callback( $arguments ) {
 
 function clea_presentation_settings_section_callback( $arguments  ) { 
 
-	switch( $arguments['id'] ){
-		case 'our_first_section':
-			$description = __( 'Réglage de la page récapitulative', 'clea-presentation' ); 
-			break;
-		case 'our_second_section':
-			$description = __( 'Réglages des écrans', 'clea-presentation' ); 
-			break;
-		case 'our_third_section':
-			$description = __( 'Autres réglages : témoignages, Yoast SEO, ...', 'clea-presentation' ); 	
-			break;
-	}
+	$sect_descr = array(
 
+		'section_1' 	=> __( 'Pour modifier les paramètres de la page qui liste tous les produits publiés au format "présentation"', 'clea-presentation' ),
+		'section_2' 	=> __( 'Un bouton qui se retrouve sur les écrans', 'clea-presentation' ),
+		'section_3' 	=> __( 'Bouton sur les écrans 1 et 2', 'clea-presentation' ),
+		'section_4' 	=> __( 'Bouton sur l\'écran 3', 'clea-presentation' ),
+		'section_5' 	=> __( 'Bouton sur l\'écran 3', 'clea-presentation' ),
+		'section_6' 	=> __( 'Définit les autres extensions à utiliser', 'clea-presentation' )
+
+	);	
+
+	$description = $sect_descr[ $arguments['id'] ] ;
 	echo "<p><em>" . $description ."</em></p>" ;
 
 }
-
 
 function clea_presentation_options_page(  ) { 
 
@@ -195,7 +205,7 @@ function clea_presentation_options_page(  ) {
 	<form action='options.php' method='post'>
 
 		<h1><?php  echo esc_html( get_admin_page_title() ); ?></h1>
-		
+		<p><em><?php echo __( 'Tous les réglages pour l\'extension "Présentations"', 'clea-presentation' ) ;?></em></p>
 
 		<?php
 		settings_errors();
@@ -258,7 +268,7 @@ function clea_presentation_settings_sections_val() {
 	$sections = array(
 		array(
 			'section_name' 	=> 'section_1',
-			'section_title'	=> __( 'Pages récapitulative', 'clea-presentation' ),
+			'section_title'	=> __( 'Page récapitulative', 'clea-presentation' ),
 			'section_callbk'=> 'clea_presentation_settings_section_callback' ,
 			'section_page'	=> $setting_page
 		),
