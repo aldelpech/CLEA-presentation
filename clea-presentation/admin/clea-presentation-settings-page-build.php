@@ -22,7 +22,7 @@
 * to set everything for the fields see clea_presentation_settings_fields_val()
 
 **********************************************************************/
- 
+
 $setting_page = 'clea_presentation_settings' ;
 $setting_group = $setting_page ;	// the group used for setting_fields 
 // if $setting_group is not = to $setting_page : "Error: options page not found"...
@@ -122,50 +122,97 @@ function clea_presentation_validator( $input ) {
 
 function clea_presentation_field_callback( $arguments ) {
 	
-	/*
-		array(
-			'field_id' 		=> 'field_2',
-			'label'			=> __( 'champs 2', 'clea-presentation' ),
-			'field_callbk'	=> 'clea_presentation_field_callback' ,
-			'section_name'	=> 'our_first_section',
-			'type'			=> 'text',
-			'options'		=> false,
-			'placeholder'	=> 'JJ/MM/YYYY',
-			'helper'		=> __( 'help 2', 'clea-presentation' ),
-			'default'		=> '01/08/2016',
-			'supplement'	=> ''
-		), 	
-	*/
-	
-	
+
 	global $setting_page ;
 	$options = get_option( $setting_page );
-	
-	$value = get_option( $arguments['field_id'] );
-	
-	if( ! $value ) { // If no value exists
-        $value = $arguments['default']; // Set to our default
-    }
+	$field_id = $arguments['field_id'] ;
+
+	if( isset( $options[ $field_id ] ) ) {
+		
+		$value = $options[ $field_id ] ;
+		$option_set = "réglage enregistré" ;
+		
+	} else {
+		
+		$value = $arguments['default']; // Set to our default
+		$option_set = "réglage PAS FAIT" ;
+	}
+
+
+	// display debug text if the mode debug checkbox is checked
+	if ( ! empty( $options['presentation_debug'] ) ) {
+		// Checkbox checked : show debug info
+		
+		/*
+		echo "<p>DEBUG : display the arguments array</p>" ;
+		var_dump( $arguments ) ; 
+		echo "<hr />";
+		// echo "$options : " ;
+		echo "<p>options pour ce champs : " . $options[ $field_id ] . "</p>" ;
+		echo "<p> value : $value , $option_set </p><br />" ;	
+		*/
+	} 
 	
 	// Check which type of field we want
     switch( $arguments['type'] ){
 		
         case 'text': // If it is a text field
-            printf( '<input name="%1$s" id="%1$s" type="%2$s" placeholder="%3$s" value="%4$s" />', $arguments['field_id'], $arguments['type'], $arguments['placeholder'], $value );
+			printf( '<input name="%1$s[%2$s]" id="%2$s" type="%3$s" value="%4$s" placeholder="%5$s" />', $setting_page, $field_id, $arguments['type'], $value, $arguments['placeholder'] ) ;
             break;
+
 		case 'textarea': // If it is a textarea
-			printf( '<textarea name="%1$s" id="%1$s" placeholder="%2$s" rows="5" cols="50">%3$s</textarea>', $arguments['field_id'], $arguments['placeholder'], $value );
+			printf( '<textarea name="%1$s[%2$s]" id="%2$s" placeholder="%3$s" rows="%6$d" cols="%5$d">%4$s</textarea>', $setting_page, $field_id, $arguments['placeholder'], $value, $arguments['cols'], $arguments['rows'] );
 			break;
+			
 		case 'select': // If it is a select dropdown
 			if( ! empty ( $arguments['options'] ) && is_array( $arguments['options'] ) ){
-				$options_markup = '';
-				foreach( $arguments['options'] as $key => $label ){
-					$options_markup .= sprintf( '<option value="%s" %s>%s</option>', $key, selected( $value, $key, false ), $label );
-				}
-				printf( '<select name="%1$s" id="%1$s">%2$s</select>', $arguments['field_id'], $options_markup );
+			
+			printf( '<select id="%2$s" name="%1$s[%2$s]">', $setting_page, $field_id );
+			foreach( $arguments['options'] as $item ) {
+				$selected = ( $options[ $field_id ]	 == $item ) ? 'selected="selected"' : '';
+				echo "<option value='$item' $selected>$item</option>";
+			}
+			echo "</select>";	
+			
+			} else {
+				echo __( 'Indiquer les options dans la définition du champs', 'clea-presentation' ) ;
 			}
 			break;
-    }
+
+		case 'checkbox' : // it's a checkbox
+			
+			printf( '<input type="hidden" name="%1s["%2$s"]" id="%2$s" value="0" />', $setting_page, $field_id ) ;			
+			// $checked = ( (int)$options[ $field_id ] == 1 ) ? ' checked="checked" ' : '';	
+			// printf( '<input type="checkbox" name="%1$s[%2$s]" id="%2$s" value="%3$d" %4$s />',$setting_page, $field_id, $options[ $field_id ], $checked ) ;	
+			
+			if( $options[ $field_id ] ) { $checked = ' checked="checked" '; }
+			printf( ' <input %3$s id="%2$s" name="%1$s[%2$s]" type="checkbox" />', $setting_page, $field_id, $checked ) ;
+			break ;
+			
+		case 'radio' : // radio buttons
+			if( ! empty ( $arguments['options'] ) && is_array( $arguments['options'] ) ){
+			
+				foreach( $arguments['options'] as $key => $label ){
+					
+					$items[] = $label ;
+				}
+
+				foreach($arguments['options'] as $item) {
+					$checked = ( $options[ $field_id ] == $item ) ? ' checked="checked" ' : '';
+					printf( '<label><input "%1$s" value="%3$d" name="%1$s[%2$s]" type="radio" /> %3$s</label><br />', $setting_page, $field_id, $item, $checked );
+				}
+			}
+			break ;
+		case 'WYSIWYG' :
+		
+			
+			$args = array( 
+				$options[ $field_id ] => $setting_page . "[" . $field_id . "]"
+			);
+			
+			wp_editor( $options[ $field_id ], $setting_page . "[" . $field_id . "]", $args );		
+			break ;	
+	}
 
 	// If there is help text
     if( $helper = $arguments['helper'] ){
@@ -176,6 +223,7 @@ function clea_presentation_field_callback( $arguments ) {
     if( $suppliment = $arguments['supplement'] ){
         printf( '<p class="description">%s</p>', $suppliment ); // Show it
     }
+
 }
 
 
@@ -215,15 +263,43 @@ function clea_presentation_options_page(  ) {
 		?>
 
 	</form>
+	<h4>display the colors used in the theme</h4>
 	<?php 
-
+	
 	$current_colors = clea_presentation_get_current_colors() ;
 	echo "<hr />";
 	var_dump( $current_colors ) ;
 	echo "<hr />";
 
 	?>
+	<h4>display all the settings saved by the plugin options page</h4>
+	<?php 
 	
+	$plugin_fields = clea_presentation_settings_fields_val() ;
+
+	if (!empty($plugin_fields)) {
+	echo"<p> tous les fields</p>" ;
+	// var_dump( $plugin_fields ) ;
+		foreach ($plugin_fields as $key => $field) {
+			
+			echo "key : $key ||| " ;
+			foreach ($field as $k => $val) {
+				print_r( $val ) ;
+				echo "<br />---------------------------------------------------------<br />" ;
+				echo "<p>id :" . $val[ 'field_id' ] . "</p>" ;
+				echo "<br />---------------------------------------------------------<br />" ;
+				$field_names[] = $val[ 'field_id' ];
+			}
+		}
+	} else {
+		$field_names[0] = 'vide !!!!';
+	}
+	
+	echo "<hr />";
+	var_dump( $field_names ) ;
+	echo "<hr />";
+
+	?>	
 	</div>
 	<?php
 
@@ -309,20 +385,41 @@ function clea_presentation_settings_sections_val() {
 }
 
 function clea_presentation_settings_fields_val() {
-	
+
+	/*********************************
+	        'text'
+			'textarea'
+			'select'
+			'checkbox'
+			'radio'
+			'WYSIWYG' : éditeur wysiwig
+	*********************************/	
+			
 	$section_1_fields = array(
+		array(
+			'field_id' 		=> 'presentation_debug',
+			'label'			=> __( 'Mode Debug', 'clea-presentation' ),
+			'field_callbk'	=> 'clea_presentation_field_callback' ,
+			'section_name'	=> 'section_1',
+			'type'			=> 'checkbox',
+			'helper'		=> __( 'Option cochée : affichage de toutes les valeurs de deboguage en bas de cette page', 'clea-presentation' ),
+			'default'		=> 1,
+			'supplement'	=> ''
+		),
 		array(
 			'field_id' 		=> 'presentation_title',
 			'field_desc'	=> __( 'titre de la page récapitulative', 'clea-presentation' ),
 			'field_callbk'	=> 'clea_presentation_field_callback' ,
 			'section_name'	=> 'section_1',
 			'label'			=> __( 'Le titre de la page', 'clea-presentation' ),
-			'type'			=> 'text',
+			'type'			=> 'textarea',
 			'options'		=> false,
-			'placeholder'	=> '#cccccc',
+			'placeholder'	=> 'votre titre ici',
 			'helper'		=> __( 'help 1', 'clea-presentation' ),
-			'default'		=> '#cc11cc',
-			'supplement'	=> ''
+			'default'		=> '',
+			'supplement'	=> '',
+			'cols'			=> 80,
+			'rows'			=> 1
 		), 	
 		array(
 			'field_id' 		=> 'page_baseline',
@@ -330,12 +427,14 @@ function clea_presentation_settings_fields_val() {
 			'field_callbk'	=> 'clea_presentation_field_callback' ,
 			'section_name'	=> 'section_1',
 			'label'			=> __( 'La baseline de la page récapitulative', 'clea-presentation' ),
-			'type'			=> 'text',
+			'type'			=> 'textarea',
 			'options'		=> false,
 			'placeholder'	=> 'votre texte ici',
 			'helper'		=> __( 'Permet de mettre un message compact avant la liste de tous les produits', 'clea-presentation' ),
 			'default'		=> '',
-			'supplement'	=> ''
+			'supplement'	=> '',
+			'cols'			=> 100,
+			'rows'			=> 6
 		), 
 		array(
 			'field_id' 		=> 'breadcrumb_title',
@@ -357,7 +456,7 @@ function clea_presentation_settings_fields_val() {
 			'section_name'	=> 'section_1',
 			'type'			=> 'text',
 			'options'		=> false,
-			'placeholder'	=> 'JJ/MM/YYYY',
+			'placeholder'	=> '',
 			'helper'		=> __( 'le texte qui finit les résumé', 'clea-presentation' ),
 			'default'		=> '',
 			'supplement'	=> ''
@@ -367,11 +466,11 @@ function clea_presentation_settings_fields_val() {
 			'label'			=> __( 'Aspect des pages de présentation', 'clea-presentation' ),
 			'field_callbk'	=> 'clea_presentation_field_callback' ,
 			'section_name'	=> 'section_1',
-			'type'			=> 'select',
+			'type'			=> 'radio',
 			'options'		=> array(
-								__( 'Pleine page', 'clea-presentation' ) 	=> 'full',
-								__( 'barre lat. gauche', 'clea-presentation' )	=> 'gauche',
-								__( 'barre lat. droite', 'clea-presentation' )	=> 'droit'
+								__( 'Pleine page', 'clea-presentation' ) ,
+								__( 'barre lat. gauche', 'clea-presentation' )	,
+								__( 'barre lat. droite', 'clea-presentation' )
 							),
 			'placeholder'	=> 'JJ/MM/YYYY',
 			'helper'		=> __( 'help 2', 'clea-presentation' ),
@@ -385,9 +484,9 @@ function clea_presentation_settings_fields_val() {
 			'section_name'	=> 'section_1',
 			'type'			=> 'select',
 			'options'		=> array(
-								'style "articles PP"' 	=> '1',
-								'style "cartes"'	=> '2',
-								'autre'	=> '3'
+								__( 'style "articles PP', 'clea-presentation' ),
+								__( 'style "cartes', 'clea-presentation' ),
+								__( 'autre', 'clea-presentation' ),
 							),
 			'placeholder'	=> '',
 			'helper'		=> __( 'pour définir la présentation de chaque produit dans la liste récapitulative', 'clea-presentation' ),
@@ -401,8 +500,8 @@ function clea_presentation_settings_fields_val() {
 			'section_name'	=> 'section_1',
 			'type'			=> 'select',
 			'options'		=> array(
-								'oui' 	=> true,
-								'non'	=> false,
+								__( 'Oui', 'clea-presentation' ),
+								__( 'Non', 'clea-presentation' ),
 							),
 			'placeholder'	=> '',
 			'helper'		=> '',
@@ -416,8 +515,8 @@ function clea_presentation_settings_fields_val() {
 			'section_name'	=> 'section_1',
 			'type'			=> 'select',
 			'options'		=> array(
-								'oui' 	=> true,
-								'non'	=> false,
+								__( 'Oui', 'clea-presentation' ),
+								__( 'Non', 'clea-presentation' ),
 							),
 			'placeholder'	=> '',
 			'helper'		=> '',
@@ -449,7 +548,7 @@ function clea_presentation_settings_fields_val() {
 			'options'		=> false,
 			'placeholder'	=> 'fa-deaf',
 			'helper'		=> '<i class="fa fa-barcode" aria-hidden="true"></i>',
-			'default'		=> __( '!!!!! donner un type icone et afficher l\icone à côté de ce champs', 'clea-presentation' ),
+			'default'		=> '',
 			'supplement'	=> '<a target="_blank" href="http://fontawesome.io/icons/">Voir les codes sur Font Awesome</a>'
 		), 
 		array(
@@ -484,12 +583,14 @@ function clea_presentation_settings_fields_val() {
 			'field_callbk'	=> 'clea_presentation_field_callback' ,
 			'section_name'	=> 'section_2',
 			'label'			=> __( 'texte du bouton', 'clea-presentation' ),
-			'type'			=> 'text',
+			'type'			=> 'textarea',
 			'options'		=> false,
 			'placeholder'	=> 'texte',
 			'helper'		=> '',
 			'default'		=> __( 'Retour à la liste des produits', 'clea-presentation' ),
-			'supplement'	=> ''
+			'supplement'	=> '',
+			'cols'			=> 80,
+			'rows'			=> 1
 		), 
 	) ;
 	

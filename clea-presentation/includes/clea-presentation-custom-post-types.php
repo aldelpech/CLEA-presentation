@@ -46,7 +46,7 @@ function clea_presentation_custom_types() {
 			'editor', 					// Content input box for writing
 			/* 'comments',*/			// Ability to turn comments on/off
 			/* 'trackbacks',	*/		// Ability to turn trackbacks and pingbacks on/off
-			/* 'revisions',	*/			// Allows revisions to be made of your post
+			'revisions',				// Allows revisions to be made of your post
 			/* 'author', */				// Displays a select box for changing the post author
 			/* 'excerpt', (see line 520 and below) */	// A textarea for writing a custom excerpt
 			'thumbnail',				// The thumbnail (featured image in 3.0) uploading box
@@ -63,6 +63,7 @@ function clea_presentation_custom_types() {
 		'menu_icon'           => 'dashicons-randomize',
 		'can_export'          => true,
 		'has_archive'         => true,
+		/* 'rewrite'             => array( 'slug' => 'NOUVEAU' ), */
 		'exclude_from_search' => false,
 		'publicly_queryable'  => true,
 		'capability_type'     => 'post',
@@ -88,7 +89,7 @@ function clea_presentation_custom_types() {
 	);
 	$args = array(
 		'label'               => __( 'slides', 'clea-presentation' ),
-		'description'         => __( 'A individual slide', 'clea-presentation' ),
+		'description'         => __( 'An individual slide', 'clea-presentation' ),
 		'labels'              => $labels,
 		'supports'            => array( 'title', 'editor', ),
 		'hierarchical'        => false,
