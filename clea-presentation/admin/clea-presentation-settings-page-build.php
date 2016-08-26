@@ -96,27 +96,20 @@ function clea_presentation_settings_section_1_init(  ) {
 
 function clea_presentation_validator( $input ) {
 	
-	// http://code.tutsplus.com/tutorials/the-complete-guide-to-the-wordpress-settings-api-part-7-validation-sanitisation-and-input-i--wp-25289
+	// https://codex.wordpress.org/Creating_Options_Pages
 	
 	 // Create our array for storing the validated options
     $output = array();
-     
-    // Loop through each of the incoming options
-    foreach( $input as $key => $value ) {
-         
-        // Check to see if the current option has a value. If so, process it.
-        if( isset( $input[$key] ) ) {
-         
-            // Strip all HTML and PHP tags and properly handle quoted strings
-            $output[$key] = strip_tags( stripslashes( $input[ $key ] ) );
-             
-        } // end if
-         
-    } // end foreach
-     
-    // Return the array processing any additional functions filtered by this action
-    return apply_filters( 'clea_presentation_validator', $output, $input );
- 
+    
+
+	if( isset( $input['label'] ) ) {
+		
+		$output['label'] = sanitize_text_field( $input['label'] );
+
+		}
+
+        return $output;
+		
 }
 
 
@@ -129,7 +122,8 @@ function clea_presentation_field_callback( $arguments ) {
 
 	if( isset( $options[ $field_id ] ) ) {
 		
-		$value = $options[ $field_id ] ;
+		// and sanitize
+		$value = esc_attr( $options[ $field_id ] ) ;
 		$option_set = "réglage enregistré" ;
 		
 	} else {
@@ -138,7 +132,48 @@ function clea_presentation_field_callback( $arguments ) {
 		$option_set = "réglage PAS FAIT" ;
 	}
 
-
+	/* sanitize all translations
+	'label'
+	'field_desc'
+	'helper'	
+	'supplement'
+	'placeholder'
+	*/
+	if ( isset( $arguments[ 'label' ] ) ) {
+		
+		$arguments[ 'label' ] = esc_attr( $arguments[ 'label' ] ) ;
+		
+	}
+	if ( isset( $arguments[ 'field_desc' ] ) ) {
+		
+		$arguments[ 'field_desc' ] = esc_attr( $arguments[ 'field_desc' ] ) ;
+		
+	}	
+	if ( isset( $arguments[ 'helper' ] ) ) {
+		
+		$arguments[ 'helper' ] = esc_attr( $arguments[ 'helper' ] ) ;
+		
+	}	
+	if ( isset( $arguments[ 'supplement' ] ) ) {
+		
+		$arguments[ 'supplement' ] = esc_attr( $arguments[ 'supplement' ] ) ;
+		
+	}	
+	if ( isset( $arguments[ 'placeholder' ] ) ) {
+		
+		$arguments[ 'placeholder' ] = esc_attr( $arguments[ 'placeholder' ] ) ;
+		
+	}	
+	if ( isset( $arguments[ 'options' ] ) ) {
+		
+		foreach ( $arguments[ 'options' ] as $key => $opt ) {
+			
+			$arguments[ 'options' ][ $key ] = esc_attr( $opt ) ;
+			
+		}
+		
+	}	
+	
 	// display debug text if the mode debug checkbox is checked
 	if ( ! empty( $options['presentation_debug'] ) ) {
 		// Checkbox checked : show debug info
@@ -182,9 +217,6 @@ function clea_presentation_field_callback( $arguments ) {
 		case 'checkbox' : // it's a checkbox
 			
 			printf( '<input type="hidden" name="%1s["%2$s"]" id="%2$s" value="0" />', $setting_page, $field_id ) ;			
-			// $checked = ( (int)$options[ $field_id ] == 1 ) ? ' checked="checked" ' : '';	
-			// printf( '<input type="checkbox" name="%1$s[%2$s]" id="%2$s" value="%3$d" %4$s />',$setting_page, $field_id, $options[ $field_id ], $checked ) ;	
-			
 			if( $options[ $field_id ] ) { $checked = ' checked="checked" '; }
 			printf( ' <input %3$s id="%2$s" name="%1$s[%2$s]" type="checkbox" />', $setting_page, $field_id, $checked ) ;
 			break ;
@@ -393,8 +425,7 @@ function clea_presentation_settings_fields_val() {
 			'checkbox'
 			'radio'
 			'WYSIWYG' : éditeur wysiwig
-	*********************************/	
-			
+	*********************************/			
 	$section_1_fields = array(
 		array(
 			'field_id' 		=> 'presentation_debug',
@@ -517,6 +548,7 @@ function clea_presentation_settings_fields_val() {
 			'options'		=> array(
 								__( 'Oui', 'clea-presentation' ),
 								__( 'Non', 'clea-presentation' ),
+								__( '<a href="/Function_Reference/sanitize_title" title="Function Reference/sanitize title">sanitize_title()</a>', 'clea-presentation' ),
 							),
 			'placeholder'	=> '',
 			'helper'		=> '',
@@ -549,7 +581,7 @@ function clea_presentation_settings_fields_val() {
 			'placeholder'	=> 'fa-deaf',
 			'helper'		=> '<i class="fa fa-barcode" aria-hidden="true"></i>',
 			'default'		=> '',
-			'supplement'	=> '<a target="_blank" href="http://fontawesome.io/icons/">Voir les codes sur Font Awesome</a>'
+			'supplement'	=> printf( '%1$s : http://fontawesome.io/icons/', __( 'Voir les codes des icones sur Font Awesome',clea-presentation ) ) 
 		), 
 		array(
 			'field_id' 		=> 'bkgd_color_section_2',
