@@ -119,7 +119,7 @@ function clea_presentation_field_callback( $arguments ) {
 	global $setting_page ;
 	$options = get_option( $setting_page );
 	$field_id = $arguments['field_id'] ;
-
+		
 	if( isset( $options[ $field_id ] ) ) {
 		
 		// and sanitize
@@ -164,18 +164,25 @@ function clea_presentation_field_callback( $arguments ) {
 		$arguments[ 'placeholder' ] = esc_attr( $arguments[ 'placeholder' ] ) ;
 		
 	}	
-	if ( isset( $arguments[ 'options' ] ) ) {
+
+	if ( isset( $arguments[ 'options' ] ) && is_array( $arguments[ 'options' ] ) ) {
+
+	// http://www.openmutual.org/2012/01/using-error_log-with-print_r-to-gracefully-debug-php/
+	// in wpconfig.php, define('WP_DEBUG_LOG', true); 
+	// the logged arrays will be printed in /wp-content/debug.log
+	error_log( print_r( $arguments[ 'options' ], true ) ) ;
+	
+		array_map( 'sanitize_text_field', $arguments[ 'options' ] );
 		
-		foreach ( $arguments[ 'options' ] as $key => $opt ) {
-			
-			$arguments[ 'options' ][ $key ] = esc_attr( $opt ) ;
-			
-		}
+	} else {
 		
-	}	
+		$arguments[ 'options' ] = false ;
+		
+	}
+
 	
 	// display debug text if the mode debug checkbox is checked
-	if ( ! empty( $options['presentation_debug'] ) ) {
+	if (  isset( $options[ 'presentation_debug' ] ) && $options[ 'presentation_debug' ] == 1 ) {
 		// Checkbox checked : show debug info
 		
 		/*
@@ -187,7 +194,11 @@ function clea_presentation_field_callback( $arguments ) {
 		echo "<p> value : $value , $option_set </p><br />" ;	
 		*/
 	} 
-	
+
+	// If there is a description
+    if( isset( $arguments['field_desc'] ) && $description = $arguments['field_desc'] ){
+        printf( '<span class="field_desc"> %s</span>', $description ); // Show it
+    }
 	// Check which type of field we want
     switch( $arguments['type'] ){
 		
@@ -204,7 +215,7 @@ function clea_presentation_field_callback( $arguments ) {
 			
 			printf( '<select id="%2$s" name="%1$s[%2$s]">', $setting_page, $field_id );
 			foreach( $arguments['options'] as $item ) {
-				$selected = ( $options[ $field_id ]	 == $item ) ? 'selected="selected"' : '';
+				$selected = ( $value	 == $item ) ? 'selected="selected"' : '';
 				echo "<option value='$item' $selected>$item</option>";
 			}
 			echo "</select>";	
@@ -217,7 +228,7 @@ function clea_presentation_field_callback( $arguments ) {
 		case 'checkbox' : // it's a checkbox
 			
 			printf( '<input type="hidden" name="%1s["%2$s"]" id="%2$s" value="0" />', $setting_page, $field_id ) ;			
-			if( $options[ $field_id ] ) { $checked = ' checked="checked" '; }
+			if( $value ) { $checked = ' checked="checked" '; }
 			printf( ' <input %3$s id="%2$s" name="%1$s[%2$s]" type="checkbox" />', $setting_page, $field_id, $checked ) ;
 			break ;
 			
@@ -229,8 +240,8 @@ function clea_presentation_field_callback( $arguments ) {
 					$items[] = $label ;
 				}
 
-				foreach($arguments['options'] as $item) {
-					$checked = ( $options[ $field_id ] == $item ) ? ' checked="checked" ' : '';
+				foreach( $arguments['options'] as $item) {
+					$checked = ( $value == $item ) ? ' checked="checked" ' : '';
 					printf( '<label><input "%1$s" value="%3$d" name="%1$s[%2$s]" type="radio" /> %3$s</label><br />', $setting_page, $field_id, $item, $checked );
 				}
 			}
@@ -243,7 +254,10 @@ function clea_presentation_field_callback( $arguments ) {
 			);
 			
 			wp_editor( $options[ $field_id ], $setting_page . "[" . $field_id . "]", $args );		
-			break ;	
+			break ;
+		case 'color-picker' :
+			echo '<input type="text" class="alpha-color-picker" name="xxx_color_setting" value="#00FF00" data-palette="#222|#444|#00CC22|rgba(72,168,42,0.4)" data-default-color="#222" data-show-opacity="true" />';
+			break ;			
 	}
 
 	// If there is help text
@@ -253,7 +267,7 @@ function clea_presentation_field_callback( $arguments ) {
 
 	// If there is supplemental text
     if( $suppliment = $arguments['supplement'] ){
-        printf( '<p class="description">%s</p>', $suppliment ); // Show it
+        printf( '<p class="complement">%s</p>', $suppliment ); // Show it
     }
 
 }
@@ -429,9 +443,11 @@ function clea_presentation_settings_fields_val() {
 	$section_1_fields = array(
 		array(
 			'field_id' 		=> 'presentation_debug',
+			'field_desc'	=> '',
 			'label'			=> __( 'Mode Debug', 'clea-presentation' ),
 			'field_callbk'	=> 'clea_presentation_field_callback' ,
 			'section_name'	=> 'section_1',
+			'options'		=> false,
 			'type'			=> 'checkbox',
 			'helper'		=> __( 'Option cochée : affichage de toutes les valeurs de deboguage en bas de cette page', 'clea-presentation' ),
 			'default'		=> 1,
@@ -560,7 +576,7 @@ function clea_presentation_settings_fields_val() {
 			'label'			=> __( 'couleur de fond des écrans"', 'clea-presentation' ),
 			'field_callbk'	=> 'clea_presentation_field_callback' ,
 			'section_name'	=> 'section_1',
-			'type'			=> 'text',
+			'type'			=> 'color-picker',
 			'options'		=> false,
 			'placeholder'	=> '#BBBBBB',
 			'helper'		=> __( 'le texte qui finit les résumé', 'clea-presentation' ),
@@ -581,7 +597,7 @@ function clea_presentation_settings_fields_val() {
 			'placeholder'	=> 'fa-deaf',
 			'helper'		=> '<i class="fa fa-barcode" aria-hidden="true"></i>',
 			'default'		=> '',
-			'supplement'	=> printf( '%1$s : http://fontawesome.io/icons/', __( 'Voir les codes des icones sur Font Awesome',clea-presentation ) ) 
+			'supplement'	=> printf( '%1$s : http://fontawesome.io/icons/', __( 'Voir les codes des icones sur Font Awesome','clea-presentation' ) ) 
 		), 
 		array(
 			'field_id' 		=> 'bkgd_color_section_2',
@@ -589,7 +605,7 @@ function clea_presentation_settings_fields_val() {
 			'field_callbk'	=> 'clea_presentation_field_callback' ,
 			'section_name'	=> 'section_2',
 			'label'			=> __( 'couleur de fond', 'clea-presentation' ),
-			'type'			=> 'color',
+			'type'			=> 'color-picker',
 			'options'		=> false,
 			'placeholder'	=> 'rgba(60,60,60,0.8)',
 			'helper'		=> '<i class="fa fa-barcode" aria-hidden="true"></i>',
@@ -602,7 +618,7 @@ function clea_presentation_settings_fields_val() {
 			'field_callbk'	=> 'clea_presentation_field_callback' ,
 			'section_name'	=> 'section_2',
 			'label'			=> __( 'couleur du texte', 'clea-presentation' ),
-			'type'			=> 'color',
+			'type'			=> 'color-picker',
 			'options'		=> false,
 			'placeholder'	=> 'rgba(60,60,60,0.8)',
 			'helper'		=> '<i class="fa fa-barcode" aria-hidden="true"></i>',
