@@ -115,30 +115,33 @@ function clea_presentation_validator( $input ) {
 
 function clea_presentation_field_callback( $arguments ) {
 	
-
+	/****
+	* with the settings API, sanitation is done by WordPress
+	****/
+	
 	global $setting_page ;
 	$options = get_option( $setting_page );
 	$field_id = $arguments['field_id'] ;
-		
+			
 	if( isset( $options[ $field_id ] ) ) {
 		
 		// and sanitize
 		$value = esc_attr( $options[ $field_id ] ) ;
-		$option_set = "réglage enregistré" ;
 		
 	} else {
 		
 		$value = $arguments['default']; // Set to our default
-		$option_set = "réglage PAS FAIT" ;
+
 	}
 
-	/* sanitize all translations
-	'label'
-	'field_desc'
-	'helper'	
-	'supplement'
-	'placeholder'
+	/*
+	echo "<hr /><pre>";
+	print_r( $arguments ) ;
+	echo "</pre><hr />";
+	echo "<p>field ID : " . $field_id . "</p>" ;
+	echo "<p>field value : " . $value . "</p>" ;
 	*/
+/*
 	if ( isset( $arguments[ 'label' ] ) ) {
 		
 		$arguments[ 'label' ] = esc_attr( $arguments[ 'label' ] ) ;
@@ -170,7 +173,7 @@ function clea_presentation_field_callback( $arguments ) {
 	// http://www.openmutual.org/2012/01/using-error_log-with-print_r-to-gracefully-debug-php/
 	// in wpconfig.php, define('WP_DEBUG_LOG', true); 
 	// the logged arrays will be printed in /wp-content/debug.log
-	error_log( print_r( $arguments[ 'options' ], true ) ) ;
+	// error_log( print_r( $arguments[ 'options' ], true ) ) ;
 	
 		array_map( 'sanitize_text_field', $arguments[ 'options' ] );
 		
@@ -185,20 +188,29 @@ function clea_presentation_field_callback( $arguments ) {
 	if (  isset( $options[ 'presentation_debug' ] ) && $options[ 'presentation_debug' ] == 1 ) {
 		// Checkbox checked : show debug info
 		
-		/*
 		echo "<p>DEBUG : display the arguments array</p>" ;
 		var_dump( $arguments ) ; 
 		echo "<hr />";
 		// echo "$options : " ;
 		echo "<p>options pour ce champs : " . $options[ $field_id ] . "</p>" ;
 		echo "<p> value : $value , $option_set </p><br />" ;	
-		*/
 	} 
 
+*/	
+	// If there is a help text and / or description
+	printf( '<span class="field_desc">' ) ;
+	
+    if( $helper = $arguments['helper'] ){
+		printf( '<img src="%1$s/images/question-mark.png" class="alignleft" id="helper" alt="help" title="%2$s" data-pin-nopin="true">',CLEA_PRES_DIR_URL, $helper ) ;
+    }
+	
 	// If there is a description
     if( isset( $arguments['field_desc'] ) && $description = $arguments['field_desc'] ){
-        printf( '<span class="field_desc"> %s</span>', $description ); // Show it
+        printf( ' %s', $description ); // Show it
     }
+
+	printf( '</span>' ) ;
+
 	// Check which type of field we want
     switch( $arguments['type'] ){
 		
@@ -234,7 +246,8 @@ function clea_presentation_field_callback( $arguments ) {
 			
 		case 'radio' : // radio buttons
 			if( ! empty ( $arguments['options'] ) && is_array( $arguments['options'] ) ){
-			
+				
+				echo "<span class='radio'>" ;
 				foreach( $arguments['options'] as $key => $label ){
 					
 					$items[] = $label ;
@@ -244,6 +257,7 @@ function clea_presentation_field_callback( $arguments ) {
 					$checked = ( $value == $item ) ? ' checked="checked" ' : '';
 					printf( '<label><input "%1$s" value="%3$d" name="%1$s[%2$s]" type="radio" /> %3$s</label><br />', $setting_page, $field_id, $item, $checked );
 				}
+				echo "</span>" ;
 			}
 			break ;
 		case 'WYSIWYG' :
@@ -256,14 +270,27 @@ function clea_presentation_field_callback( $arguments ) {
 			wp_editor( $options[ $field_id ], $setting_page . "[" . $field_id . "]", $args );		
 			break ;
 		case 'color-picker' :
-			echo '<input type="text" class="alpha-color-picker" name="xxx_color_setting" value="#00FF00" data-palette="#222|#444|#00CC22|rgba(72,168,42,0.4)" data-default-color="#222" data-show-opacity="true" />';
+	
+			// get the colors used by the theme
+			$current_colors = clea_presentation_get_current_colors() ;
+			$data_palette = "";
+			
+			// remove duplicate colors
+			$current_colors = array_unique( $current_colors ) ;
+			
+			foreach ( $current_colors as $color ) {
+				
+				$data_palette .= $color . '|' ;
+				
+			}
+			
+			$data_palette = rtrim( $data_palette, '|' ) ;
+			
+			
+			// uses https://github.com/BraadMartin/components/tree/master/alpha-color-picker
+			printf( '<input type="text" class="alpha-color-picker" name="%1$s[%2$s]" value="%3$s" data-palette="%5$s" data-default-color="%4$s" data-show-opacity="true" />', $setting_page, $field_id, $value, $arguments['default'], $data_palette  ) ;
 			break ;			
 	}
-
-	// If there is help text
-    if( $helper = $arguments['helper'] ){
-        printf( '<span class="helper"> %s</span>', $helper ); // Show it
-    }
 
 	// If there is supplemental text
     if( $suppliment = $arguments['supplement'] ){
@@ -309,42 +336,55 @@ function clea_presentation_options_page(  ) {
 		?>
 
 	</form>
+	<h4> is debug mode set ? </h4>
+	<?php
+	$options = get_option( $setting_page );
+	if (  isset( $options[ 'presentation_debug' ] ) ) {
+			echo"<p>we are in debug mode</p>"  ; 
+	} else {
+			echo "<p>Presentation debug set to " . esc_attr( $options[ 'presentation_debug' ] ) . "</p>"  ; 
+	}
+	?>
+	
 	<h4>display the colors used in the theme</h4>
 	<?php 
 	
 	$current_colors = clea_presentation_get_current_colors() ;
-	echo "<hr />";
-	var_dump( $current_colors ) ;
-	echo "<hr />";
+	echo "<hr /><pre>";
+	print_r( $current_colors ) ;
+	echo "</pre><hr />";
 
 	?>
-	<h4>display all the settings saved by the plugin options page</h4>
+	<h4>display all the field data of this options page</h4>
 	<?php 
 	
 	$plugin_fields = clea_presentation_settings_fields_val() ;
 
-	if (!empty($plugin_fields)) {
-	echo"<p> tous les fields</p>" ;
-	// var_dump( $plugin_fields ) ;
-		foreach ($plugin_fields as $key => $field) {
-			
-			echo "key : $key ||| " ;
-			foreach ($field as $k => $val) {
-				print_r( $val ) ;
-				echo "<br />---------------------------------------------------------<br />" ;
-				echo "<p>id :" . $val[ 'field_id' ] . "</p>" ;
-				echo "<br />---------------------------------------------------------<br />" ;
-				$field_names[] = $val[ 'field_id' ];
-			}
-		}
-	} else {
-		$field_names[0] = 'vide !!!!';
+	if ( !empty( $plugin_fields ) ) {
+		echo"<p> tous les fields</p>" ;
+		echo "<hr /><pre>";
+		print_r( $plugin_fields ) ;
+		echo "</pre><hr />";
 	}
-	
-	echo "<hr />";
-	var_dump( $field_names ) ;
-	echo "<hr />";
 
+	?>
+	<h4>list all field ids which may be in the options</h4>
+	<p> then use <code>$options = get_option( $setting_page )</code><p>
+	<p> <code>$options[ 'field-name' ]</code> will contain the value of the setting<p>	
+	<?php 
+	
+	foreach ( $plugin_fields as $values ) {
+		
+		foreach ( $values as $val ) {
+			
+			echo"<p>field_id : " . $val[ 'field_id' ] .  "</p>"  ;
+		
+		}
+
+	}
+
+
+	
 	?>	
 	</div>
 	<?php

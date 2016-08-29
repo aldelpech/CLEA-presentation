@@ -2,13 +2,18 @@
 
 Ce plugin a été créé sur la base d'un plugin de Chris Knowles
  * voir http://premium.wpmudev.org/blog/create-presentations-in-wordpress-with-flowtime/
-
+Ce plugin contient un color picker créé par Braad Martin ( https://github.com/BraadMartin )
 ==========
 ## pour générer des présentations produit satisfaisantes
 
 
 ==========
 ## changelog
+
+V1.0
+
+* In the settings page a checkbox may be used by a developer to display the contents of some arrays at the bottom of the setting page. 
+* A settings page for the admin users lets her set some options for the plugin
 
 V0-9
 * yet another split among more files ! 

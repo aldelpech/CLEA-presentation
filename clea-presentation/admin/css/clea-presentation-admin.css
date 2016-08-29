@@ -1,0 +1,14 @@
+/**
+ * Settings page (admin)
+ */
+ 
+span.field_desc {
+	display: block;
+	font-style: italic;
+	margin-bottom: 5px;
+}
+
+img#helper {
+	margin-right: 5px;
+}
+
