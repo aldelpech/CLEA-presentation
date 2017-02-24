@@ -1,5 +1,8 @@
 # plugin wordpress - version de base
 
+NE FONCTIONNE PAS CORRECTEMENT
+les medias ne se chargent pas correctement en mode grille - problème probable de choix des hook pour les chargements de fonctions
+
 Ce plugin a été créé sur la base d'un plugin de Chris Knowles
  * voir http://premium.wpmudev.org/blog/create-presentations-in-wordpress-with-flowtime/
 Ce plugin contient un color picker créé par Braad Martin ( https://github.com/BraadMartin )
